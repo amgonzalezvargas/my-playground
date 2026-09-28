@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Playground | App Directory</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090d16;
+      --surface-1: #111726;
+      --surface-2: #182033;
+      --surface-card: rgba(20, 27, 44, 0.7);
+      --border: rgba(255, 255, 255, 0.08);
+      --border-hover: rgba(99, 102, 241, 0.4);
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent: #6366f1;
+      --accent-glow: rgba(99, 102, 241, 0.25);
+      --font-display: 'Outfit', -apple-system, sans-serif;
+      --font-body: 'Plus Jakarta Sans', -apple-system, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      background-image: 
+        radial-gradient(circle at 15% 20%, rgba(99, 102, 241, 0.12) 0%, transparent 45%),
+        radial-gradient(circle at 85% 60%, rgba(16, 185, 129, 0.08) 0%, transparent 45%),
+        radial-gradient(circle at 50% 90%, rgba(244, 63, 94, 0.06) 0%, transparent 50%);
+      color: var(--text);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 32px 20px 48px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1180px;
+      margin: 0 auto;
+    }
+
+    /* ==========================================================================
+       HERO HEADER
+       ========================================================================== */
+    header {
+      margin-bottom: 36px;
+      text-align: center;
+      position: relative;
+    }
+
+    .badge-top {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 14px;
+      background: rgba(99, 102, 241, 0.12);
+      border: 1px solid rgba(99, 102, 241, 0.25);
+      border-radius: 9999px;
+      color: #a5b4fc;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      margin-bottom: 14px;
+      text-transform: uppercase;
+    }
+
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: 2.75rem;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      margin-bottom: 12px;
+      background: linear-gradient(135deg, #ffffff 40%, #c7d2fe 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-desc {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      max-width: 620px;
+      margin: 0 auto 24px;
+      line-height: 1.6;
+    }
+
+    /* Search & Filter Controls */
+    .controls-panel {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      background: var(--surface-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 12px 18px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+      margin-bottom: 32px;
+    }
+
+    .search-wrapper {
+      position: relative;
+      flex: 1;
+      min-width: 240px;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+
+    .search-input {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 14px 10px 38px;
+      font-family: inherit;
+      font-size: 0.9rem;
+      color: #fff;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .search-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    .filter-pills {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+
+    .filter-btn:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .filter-btn.active {
+      color: #fff;
+      background: var(--accent);
+      border-color: var(--accent);
+      box-shadow: 0 2px 10px var(--accent-glow);
+    }
+
+    /* ==========================================================================
+       APP CARDS GRID
+       ========================================================================== */
+    .app-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+      gap: 24px;
+      margin-bottom: 48px;
+    }
+
+    .app-card {
+      background: var(--surface-card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      backdrop-filter: blur(12px);
+      transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.22s, box-shadow 0.22s;
+      text-decoration: none;
+      color: inherit;
+      position: relative;
+    }
+
+    .app-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--border-hover);
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4), 0 0 25px var(--accent-glow);
+    }
+
+    /* Visual Thumbnail Container */
+    .card-thumbnail {
+      position: relative;
+      width: 100%;
+      height: 180px;
+      background: #0f172a;
+      overflow: hidden;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .thumbnail-svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+      transition: transform 0.3s ease;
+    }
+
+    .app-card:hover .thumbnail-svg {
+      transform: scale(1.03);
+    }
+
+    /* Floating Badges on Thumbnail */
+    .thumb-badges {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      right: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 2;
+    }
+
+    .lang-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      backdrop-filter: blur(8px);
+    }
+
+    .lang-badge.spanish {
+      background: rgba(234, 88, 12, 0.85);
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(234, 88, 12, 0.35);
+    }
+
+    .lang-badge.english {
+      background: rgba(37, 99, 235, 0.85);
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.35);
+    }
+
+    .type-badge {
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #e2e8f0;
+      backdrop-filter: blur(8px);
+    }
+
+    /* Card Content */
+    .card-body {
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .card-title {
+      font-family: var(--font-display);
+      font-size: 1.22rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      margin-bottom: 8px;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .launch-icon {
+      font-size: 1rem;
+      opacity: 0.6;
+      transition: transform 0.2s, opacity 0.2s;
+    }
+
+    .app-card:hover .launch-icon {
+      transform: translate(2px, -2px);
+      opacity: 1;
+      color: var(--accent);
+    }
+
+    .card-desc {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.55;
+      margin-bottom: 16px;
+      flex: 1;
+    }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid var(--border);
+      padding-top: 14px;
+      margin-top: auto;
+    }
+
+    .tag-cluster {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .tech-pill {
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 5px;
+      background: rgba(255, 255, 255, 0.05);
+      color: #cbd5e1;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .launch-btn {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #a5b4fc;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* Empty state */
+    .empty-state {
+      display: none;
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 48px 20px;
+      color: var(--text-muted);
+    }
+
+    /* Footer */
+    footer {
+      margin-top: auto;
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+      padding-top: 24px;
+    }
+
+    footer a {
+      color: #a5b4fc;
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <div class="badge-top">🚀 Client-Side Suite</div>
+      <h1 class="hero-title">My Playground</h1>
+      <p class="hero-desc">
+        A curated collection of single-file web applications, interactive games, and developer utilities. Run them directly in your browser with zero build steps or server setup.
+      </p>
+
+      <!-- Search & Category Filters -->
+      <div class="controls-panel">
+        <div class="search-wrapper">
+          <span class="search-icon">🔍</span>
+          <input type="text" class="search-input" id="searchInput" placeholder="Search apps by title, tags, or features...">
+        </div>
+        <div class="filter-pills" id="filterGroup">
+          <button class="filter-btn active" data-filter="all">All (4)</button>
+          <button class="filter-btn" data-filter="spanish">🇪🇸 Spanish (1)</button>
+          <button class="filter-btn" data-filter="english">🇬🇧 English (3)</button>
+          <button class="filter-btn" data-filter="game">🎮 Games</button>
+          <button class="filter-btn" data-filter="utility">🛠️ Utilities</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- App Cards Grid -->
+    <main class="app-grid" id="appGrid">
+
+      <!-- 1. TABLE TENNIS CHAMPIONSHIP -->
+      <a href="./table_tennis.html" class="app-card" data-lang="english" data-type="game" data-tags="ping pong tennis arcade 2 players sound canvas audio">
+        <div class="card-thumbnail">
+          <div class="thumb-badges">
+            <span class="lang-badge english">🇬🇧 English</span>
+            <span class="type-badge">Arcade Game</span>
+          </div>
+          <!-- SVG Thumbnail Graphic: Green Table, Beige Paddles, White Ball -->
+          <svg class="thumbnail-svg" viewBox="0 0 320 180" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="tableBg" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#1e6b3f" />
+                <stop offset="100%" stop-color="#114728" />
+              </linearGradient>
+              <linearGradient id="paddleWood" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#f5e5d3" />
+                <stop offset="100%" stop-color="#d4bba0" />
+              </linearGradient>
+              <filter id="ballGlow" x="-20%" y="-20%" width="140%" height="140%">
+                <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#ffffff" flood-opacity="0.35"/>
+              </filter>
+            </defs>
+            <!-- Table Base -->
+            <rect x="25" y="24" width="270" height="132" rx="10" fill="url(#tableBg)" stroke="#11361f" stroke-width="4"/>
+            <!-- White Boundary Lines -->
+            <rect x="34" y="32" width="252" height="116" fill="none" stroke="#ffffff" stroke-width="2" opacity="0.9"/>
+            <!-- Center Line -->
+            <line x1="34" y1="90" x2="286" y2="90" stroke="#ffffff" stroke-width="1.2" opacity="0.6"/>
+            <!-- Net Mesh and Tape -->
+            <line x1="160" y1="28" x2="160" y2="152" stroke="#ffffff" stroke-width="2.5" stroke-dasharray="3,3" opacity="0.7"/>
+            <line x1="159" y1="26" x2="161" y2="26" stroke="#ffffff" stroke-width="3"/>
+            <!-- Left Paddle (Beige) -->
+            <rect x="52" y="62" width="8" height="52" rx="4" fill="url(#paddleWood)" stroke="#9c7a56" stroke-width="1"/>
+            <!-- Right Paddle (Beige) -->
+            <rect x="260" y="74" width="8" height="52" rx="4" fill="url(#paddleWood)" stroke="#9c7a56" stroke-width="1"/>
+            <!-- Motion Trail & White Ball -->
+            <circle cx="178" cy="80" r="4" fill="#ffffff" opacity="0.25"/>
+            <circle cx="192" cy="82" r="5" fill="#ffffff" opacity="0.5"/>
+            <circle cx="208" cy="84" r="6.5" fill="#ffffff" filter="url(#ballGlow)"/>
+            <!-- Mini HUD Overlay -->
+            <rect x="128" y="36" width="64" height="18" rx="5" fill="rgba(0,0,0,0.6)"/>
+            <text x="160" y="49" fill="#60a5fa" font-size="10" font-family="sans-serif" font-weight="bold" text-anchor="middle">
+              11 <tspan fill="#94a3b8">:</tspan> <tspan fill="#f87171">09</tspan>
+            </text>
+          </svg>
+        </div>
+        <div class="card-body">
+          <h2 class="card-title">
+            Table Tennis Championship
+            <span class="launch-icon">↗</span>
+          </h2>
+          <p class="card-desc">
+            Fast-paced arcade ping-pong with 3 AI levels, custom points target, synthesized Web Audio sound FX, scoreboard HUD, and 2-player local battle.
+          </p>
+          <div class="card-footer">
+            <div class="tag-cluster">
+              <span class="tech-pill">Canvas</span>
+              <span class="tech-pill">Web Audio</span>
+              <span class="tech-pill">2 Players</span>
+            </div>
+            <span class="launch-btn">Play Now &rarr;</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- 2. ANATOFLASH - 100 MUSCULOS -->
+      <a href="./fc_musculos.html" class="app-card" data-lang="spanish" data-type="utility" data-tags="anatomia musculos flashcards fitness anatomoflash salud medicina estudio">
+        <div class="card-thumbnail">
+          <div class="thumb-badges">
+            <span class="lang-badge spanish">🇪🇸 Spanish</span>
+            <span class="type-badge">Study Flashcards</span>
+          </div>
+          <!-- SVG Thumbnail Graphic: Anatomy Flashcard -->
+          <svg class="thumbnail-svg" viewBox="0 0 320 180" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="cardGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#1e293b" />
+                <stop offset="100%" stop-color="#0f172a" />
+              </linearGradient>
+            </defs>
+            <rect width="320" height="180" fill="url(#cardGrad)" />
+            <!-- Central Flashcard Representation -->
+            <rect x="60" y="22" width="200" height="136" rx="12" fill="#ffffff" stroke="#38bdf8" stroke-width="1.5" filter="drop-shadow(0 8px 20px rgba(0,0,0,0.5))"/>
+            <!-- Card Header Ribbon -->
+            <rect x="74" y="34" width="70" height="14" rx="4" fill="#eff6ff"/>
+            <text x="78" y="44" fill="#3b82f6" font-size="8" font-family="sans-serif" font-weight="bold">#42 • BRAZO</text>
+            <!-- Muscle Title -->
+            <text x="74" y="68" fill="#0f172a" font-size="14" font-family="sans-serif" font-weight="800">Bíceps Braquial</text>
+            <!-- Card Details Simulation -->
+            <rect x="74" y="80" width="172" height="6" rx="3" fill="#e2e8f0"/>
+            <rect x="74" y="92" width="145" height="6" rx="3" fill="#e2e8f0"/>
+            <rect x="74" y="104" width="160" height="6" rx="3" fill="#e2e8f0"/>
+            <!-- Flip Button Badge -->
+            <rect x="110" y="122" width="100" height="22" rx="6" fill="#10b981"/>
+            <text x="160" y="137" fill="#ffffff" font-size="9" font-family="sans-serif" font-weight="bold" text-anchor="middle">↻ Ver Detalles</text>
+          </svg>
+        </div>
+        <div class="card-body">
+          <h2 class="card-title">
+            AnatoFlash: 100 Músculos
+            <span class="launch-icon">↗</span>
+          </h2>
+          <p class="card-desc">
+            Aplicación interactiva de repaso anatómico con 100 tarjetas detallando origen, inserción, funciones biomecánicas y ejercicios de gimnasio recomendados.
+          </p>
+          <div class="card-footer">
+            <div class="tag-cluster">
+              <span class="tech-pill">100 Cards</span>
+              <span class="tech-pill">Fitness</span>
+              <span class="tech-pill">Biología</span>
+            </div>
+            <span class="launch-btn">Abrir &rarr;</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- 3. SECURE PASSWORD GENERATOR -->
+      <a href="./password_generator.html" class="app-card" data-lang="english" data-type="utility" data-tags="password generator security crypto credentials generator">
+        <div class="card-thumbnail">
+          <div class="thumb-badges">
+            <span class="lang-badge english">🇬🇧 English</span>
+            <span class="type-badge">Security Tool</span>
+          </div>
+          <!-- SVG Thumbnail Graphic: Password Generator -->
+          <svg class="thumbnail-svg" viewBox="0 0 320 180" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="purpleGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#4f46e5" />
+                <stop offset="100%" stop-color="#7c3aed" />
+              </linearGradient>
+            </defs>
+            <rect width="320" height="180" fill="url(#purpleGrad)" />
+            <!-- App Card Preview -->
+            <rect x="55" y="24" width="210" height="132" rx="10" fill="#ffffff" filter="drop-shadow(0 10px 25px rgba(0,0,0,0.35))"/>
+            <!-- Title -->
+            <text x="72" y="46" fill="#1e1b4b" font-size="11" font-family="sans-serif" font-weight="bold">Generate Password</text>
+            <!-- Password Display Box -->
+            <rect x="72" y="56" width="176" height="34" rx="6" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2"/>
+            <text x="82" y="77" fill="#334155" font-size="13" font-family="monospace" font-weight="bold">k7#Q9$mX2!wP</text>
+            <!-- Copy icon simulation -->
+            <rect x="226" y="65" width="14" height="16" rx="2" fill="none" stroke="#6366f1" stroke-width="1.5"/>
+            <!-- Strength Bar -->
+            <rect x="72" y="98" width="176" height="5" rx="2.5" fill="#e2e8f0"/>
+            <rect x="72" y="98" width="140" height="5" rx="2.5" fill="#10b981"/>
+            <!-- Action Button -->
+            <rect x="72" y="112" width="176" height="28" rx="6" fill="#4f46e5"/>
+            <text x="160" y="130" fill="#ffffff" font-size="10" font-family="sans-serif" font-weight="bold" text-anchor="middle">Generate New</text>
+          </svg>
+        </div>
+        <div class="card-body">
+          <h2 class="card-title">
+            Secure Password Generator
+            <span class="launch-icon">↗</span>
+          </h2>
+          <p class="card-desc">
+            Customizable client-side password builder with granular length options, symbols, uppercase/numbers toggles, and live strength assessment.
+          </p>
+          <div class="card-footer">
+            <div class="tag-cluster">
+              <span class="tech-pill">Crypto</span>
+              <span class="tech-pill">Clipboard</span>
+              <span class="tech-pill">Security</span>
+            </div>
+            <span class="launch-btn">Generate &rarr;</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- 4. TEXT FILE MERGER -->
+      <a href="./txt_file_merger.html" class="app-card" data-lang="english" data-type="utility" data-tags="text file merger joiner txt merge documents files concatenate">
+        <div class="card-thumbnail">
+          <div class="thumb-badges">
+            <span class="lang-badge english">🇬🇧 English</span>
+            <span class="type-badge">Text Utility</span>
+          </div>
+          <!-- SVG Thumbnail Graphic: Text File Merger -->
+          <svg class="thumbnail-svg" viewBox="0 0 320 180" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="mergerBg" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#1e293b" />
+                <stop offset="100%" stop-color="#0f172a" />
+              </linearGradient>
+            </defs>
+            <rect width="320" height="180" fill="url(#mergerBg)" />
+            <!-- Container Box -->
+            <rect x="50" y="24" width="220" height="132" rx="10" fill="#ffffff" filter="drop-shadow(0 8px 25px rgba(0,0,0,0.4))"/>
+            <!-- Title -->
+            <text x="68" y="44" fill="#0f172a" font-size="11" font-family="sans-serif" font-weight="bold">Text File Merger</text>
+            <!-- File item 1 -->
+            <rect x="68" y="52" width="184" height="20" rx="4" fill="#f1f5f9" stroke="#e2e8f0" stroke-width="1"/>
+            <text x="76" y="65" fill="#334155" font-size="8" font-family="sans-serif">📄 notes_part1.txt</text>
+            <!-- File item 2 -->
+            <rect x="68" y="76" width="184" height="20" rx="4" fill="#f1f5f9" stroke="#e2e8f0" stroke-width="1"/>
+            <text x="76" y="89" fill="#334155" font-size="8" font-family="sans-serif">📄 notes_part2.txt</text>
+            <!-- Merge Action Button -->
+            <rect x="68" y="102" width="184" height="22" rx="5" fill="#2563eb"/>
+            <text x="160" y="116" fill="#ffffff" font-size="9" font-family="sans-serif" font-weight="bold" text-anchor="middle">Merge into merged.txt</text>
+            <!-- Download Button -->
+            <rect x="68" y="128" width="88" height="16" rx="4" fill="#e2e8f0"/>
+            <text x="112" y="139" fill="#475569" font-size="7.5" font-family="sans-serif" font-weight="bold" text-anchor="middle">Download</text>
+            <rect x="164" y="128" width="88" height="16" rx="4" fill="#e2e8f0"/>
+            <text x="208" y="139" fill="#475569" font-size="7.5" font-family="sans-serif" font-weight="bold" text-anchor="middle">Copy All</text>
+          </svg>
+        </div>
+        <div class="card-body">
+          <h2 class="card-title">
+            Text File Merger
+            <span class="launch-icon">↗</span>
+          </h2>
+          <p class="card-desc">
+            Load and stitch multiple plain text documents into a unified output file with separator headers, copy support, and download management.
+          </p>
+          <div class="card-footer">
+            <div class="tag-cluster">
+              <span class="tech-pill">Multi-file</span>
+              <span class="tech-pill">Blob Export</span>
+              <span class="tech-pill">Text Parsing</span>
+            </div>
+            <span class="launch-btn">Merge &rarr;</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- Empty State Indicator -->
+      <div class="empty-state" id="emptyState">
+        <h3>No applications found</h3>
+        <p>Try searching for a different keyword or resetting your filter.</p>
+      </div>
+
+    </main>
+
+    <footer>
+      <p>
+        <strong>My Playground</strong> • Hosted with GitHub Pages &bull; 
+        <a href="https://github.com/amgonzalezvargas/my-playground" target="_blank" rel="noopener">View Repository</a>
+      </p>
+    </footer>
+  </div>
+
+  <script>
+    // Live Search & Category Filter Logic
+    const searchInput = document.getElementById('searchInput');
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const cards = document.querySelectorAll('.app-card');
+    const emptyState = document.getElementById('emptyState');
+
+    let currentFilter = 'all';
+    let searchQuery = '';
+
+    filterButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentFilter = btn.dataset.filter;
+        applyFilters();
+      });
+    });
+
+    searchInput.addEventListener('input', (e) => {
+      searchQuery = e.target.value.toLowerCase().trim();
+      applyFilters();
+    });
+
+    function applyFilters() {
+      let visibleCount = 0;
+
+      cards.forEach(card => {
+        const lang = card.dataset.lang;
+        const type = card.dataset.type;
+        const tags = (card.dataset.tags || '') + ' ' + card.innerText.toLowerCase();
+
+        // Check category filter
+        let matchesCategory = false;
+        if (currentFilter === 'all') {
+          matchesCategory = true;
+        } else if (currentFilter === 'spanish') {
+          matchesCategory = (lang === 'spanish');
+        } else if (currentFilter === 'english') {
+          matchesCategory = (lang === 'english');
+        } else if (currentFilter === 'game') {
+          matchesCategory = (type === 'game');
+        } else if (currentFilter === 'utility') {
+          matchesCategory = (type === 'utility');
+        }
+
+        // Check search query
+        const matchesSearch = !searchQuery || tags.includes(searchQuery);
+
+        if (matchesCategory && matchesSearch) {
+          card.style.display = 'flex';
+          visibleCount++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      emptyState.style.display = visibleCount === 0 ? 'block' : 'none';
+    }
+  </script>
+</body>
+</html>

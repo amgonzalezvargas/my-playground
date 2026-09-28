@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Text File Merger</title>
+<style>
+  body {
+    font-family: -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 0 20px;
+    background: #f7f8fa;
+    color: #1a1a1a;
+  }
+  h1 { font-size: 1.6rem; margin-bottom: 4px; }
+  p.subtitle { color: #555; margin-top: 0; }
+  .card {
+    background: #fff;
+    border: 1px solid #e2e2e2;
+    border-radius: 10px;
+    padding: 24px;
+    margin-top: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+  input[type="file"] {
+    display: block;
+    margin: 12px 0;
+  }
+  #fileList {
+    list-style: none;
+    padding: 0;
+    margin: 12px 0;
+  }
+  #fileList li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    border: 1px solid #e2e2e2;
+    border-radius: 6px;
+    margin-bottom: 6px;
+    background: #fafafa;
+  }
+  #fileList li span.name { font-weight: 500; }
+  #fileList li button {
+    background: none;
+    border: none;
+    color: #c0392b;
+    cursor: pointer;
+    font-size: 0.9rem;
+  }
+  .btn-row { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+  button.primary {
+    background: #2d6cdf;
+    color: #fff;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.95rem;
+  }
+  button.primary:disabled { background: #a9c1e8; cursor: not-allowed; }
+  button.secondary {
+    background: #eee;
+    border: 1px solid #ccc;
+    padding: 10px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.95rem;
+  }
+  textarea {
+    width: 100%;
+    height: 320px;
+    margin-top: 16px;
+    font-family: "SFMono-Regular", Consolas, Menlo, monospace;
+    font-size: 0.85rem;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    resize: vertical;
+  }
+  .filename-input {
+    margin-top: 12px;
+  }
+  .filename-input label {
+    font-size: 0.85rem;
+    color: #444;
+    display: block;
+    margin-bottom: 4px;
+  }
+  .filename-input input {
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    width: 260px;
+  }
+  .hint { font-size: 0.8rem; color: #777; margin-top: 6px; }
+</style>
+</head>
+<body>
+
+<h1>Text File Merger</h1>
+<p class="subtitle">Load multiple .txt files and merge them into one, separated by a line and the file name.</p>
+
+<div class="card">
+  <label for="fileInput"><strong>Select .txt files</strong></label>
+  <input type="file" id="fileInput" accept=".txt,text/plain" multiple>
+  <div class="hint">You can select multiple files at once, or add more files in additional passes. Drag to reorder is not supported here, but files are merged in the order shown below.</div>
+
+  <ul id="fileList"></ul>
+
+  <div class="btn-row">
+    <button class="primary" id="mergeBtn" disabled>Merge files</button>
+    <button class="secondary" id="clearBtn">Clear list</button>
+  </div>
+
+  <div class="filename-input">
+    <label for="outName">Output file name</label>
+    <input type="text" id="outName" value="merged.txt">
+  </div>
+
+  <textarea id="output" placeholder="Merged content will appear here..." readonly></textarea>
+
+  <div class="btn-row">
+    <button class="primary" id="downloadBtn" disabled>Download merged file</button>
+    <button class="secondary" id="copyBtn" disabled>Copy to clipboard</button>
+  </div>
+</div>
+
+<script>
+  const fileInput = document.getElementById('fileInput');
+  const fileListEl = document.getElementById('fileList');
+  const mergeBtn = document.getElementById('mergeBtn');
+  const clearBtn = document.getElementById('clearBtn');
+  const outputEl = document.getElementById('output');
+  const downloadBtn = document.getElementById('downloadBtn');
+  const copyBtn = document.getElementById('copyBtn');
+  const outNameInput = document.getElementById('outName');
+
+  let files = [];
+
+  function renderFileList() {
+    fileListEl.innerHTML = '';
+    files.forEach((f, idx) => {
+      const li = document.createElement('li');
+      const nameSpan = document.createElement('span');
+      nameSpan.className = 'name';
+      nameSpan.textContent = f.name;
+      const removeBtn = document.createElement('button');
+      removeBtn.textContent = 'Remove';
+      removeBtn.addEventListener('click', () => {
+        files.splice(idx, 1);
+        renderFileList();
+      });
+      li.appendChild(nameSpan);
+      li.appendChild(removeBtn);
+      fileListEl.appendChild(li);
+    });
+    mergeBtn.disabled = files.length === 0;
+  }
+
+  fileInput.addEventListener('change', (e) => {
+    const newFiles = Array.from(e.target.files);
+    files = files.concat(newFiles);
+    renderFileList();
+    fileInput.value = '';
+  });
+
+  clearBtn.addEventListener('click', () => {
+    files = [];
+    renderFileList();
+    outputEl.value = '';
+    downloadBtn.disabled = true;
+    copyBtn.disabled = true;
+  });
+
+  function readFileAsText(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsText(file);
+    });
+  }
+
+  const SEPARATOR_LINE = '-'.repeat(60);
+
+  mergeBtn.addEventListener('click', async () => {
+    if (files.length === 0) return;
+    mergeBtn.disabled = true;
+    mergeBtn.textContent = 'Merging...';
+
+    let combined = '';
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const text = await readFileAsText(file);
+      if (i > 0) {
+        combined += '\n\n';
+      }
+      combined += SEPARATOR_LINE + '\n';
+      combined += file.name + '\n';
+      combined += SEPARATOR_LINE + '\n\n';
+      combined += text;
+    }
+
+    outputEl.value = combined;
+    downloadBtn.disabled = false;
+    copyBtn.disabled = false;
+    mergeBtn.disabled = false;
+    mergeBtn.textContent = 'Merge files';
+  });
+
+  downloadBtn.addEventListener('click', () => {
+    const blob = new Blob([outputEl.value], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    let name = outNameInput.value.trim() || 'merged.txt';
+    if (!name.toLowerCase().endsWith('.txt')) name += '.txt';
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+
+  copyBtn.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(outputEl.value);
+      copyBtn.textContent = 'Copied!';
+      setTimeout(() => { copyBtn.textContent = 'Copy to clipboard'; }, 1500);
+    } catch (err) {
+      alert('Could not copy automatically. Please copy manually from the text box.');
+    }
+  });
+</script>
+
+</body>
+</html>

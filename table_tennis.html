@@ -1,0 +1,1312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Table Tennis Championship</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0c1017;
+      --panel-bg: rgba(22, 27, 34, 0.85);
+      --panel-border: rgba(255, 255, 255, 0.08);
+      --table-green: #1a5e38;
+      --table-dark-green: #14492b;
+      --table-line: #ffffff;
+      --paddle-beige: #e8d3b9;
+      --paddle-handle: #cbb193;
+      --ball-white: #ffffff;
+      --accent-gold: #f59e0b;
+      --accent-blue: #3b82f6;
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --font-family: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(circle at 50% 15%, rgba(30, 95, 56, 0.15), transparent 60%),
+        radial-gradient(circle at 50% 85%, rgba(15, 23, 42, 0.6), transparent 70%);
+      color: var(--text-main);
+      font-family: var(--font-family);
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 16px 12px 16px;
+    }
+
+    /* ==========================================================================
+       TOP SETTINGS BAR
+       ========================================================================== */
+    .header-bar {
+      width: 100%;
+      max-width: 1080px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 18px;
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      border-radius: 14px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+      z-index: 10;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #ffffff 40%, #a7f3d0 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .brand-badge {
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: rgba(34, 197, 94, 0.15);
+      color: #4ade80;
+      border: 1px solid rgba(34, 197, 94, 0.3);
+    }
+
+    .controls-group {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .setting-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .setting-label {
+      font-size: 0.76rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+    }
+
+    /* Pill Button Groups */
+    .pill-group {
+      display: flex;
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 9px;
+      padding: 3px;
+      gap: 3px;
+    }
+
+    .pill-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-family: inherit;
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 5px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .pill-btn:hover:not(:disabled) {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .pill-btn.active {
+      color: #ffffff;
+      background: #2563eb;
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.4);
+    }
+
+    .pill-btn.difficulty.active[data-diff="easy"] {
+      background: #10b981;
+      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+    }
+    .pill-btn.difficulty.active[data-diff="medium"] {
+      background: #f59e0b;
+      box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);
+    }
+    .pill-btn.difficulty.active[data-diff="hard"] {
+      background: #ef4444;
+      box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+    }
+
+    .pill-btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    /* Target Points Stepper */
+    .stepper {
+      display: flex;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 9px;
+      padding: 2px;
+    }
+
+    .step-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-main);
+      width: 26px;
+      height: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.95rem;
+      font-weight: 700;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .step-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .step-value {
+      min-width: 32px;
+      text-align: center;
+      font-size: 0.88rem;
+      font-weight: 800;
+      color: #ffffff;
+      padding: 0 4px;
+    }
+
+    .icon-action-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-main);
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-family: inherit;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.18s;
+    }
+
+    .icon-action-btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    /* ==========================================================================
+       GAME ARENA & CANVAS
+       ========================================================================== */
+    .arena-container {
+      flex: 1;
+      width: 100%;
+      max-width: 1080px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      margin: 8px 0;
+    }
+
+    .table-wrapper {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      max-height: calc(100vh - 165px);
+      aspect-ratio: 16 / 9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      filter: drop-shadow(0 18px 45px rgba(0, 0, 0, 0.65));
+    }
+
+    #gameCanvas {
+      width: 100%;
+      height: 100%;
+      background: var(--table-green);
+      border-radius: 16px;
+      box-shadow: 
+        inset 0 0 70px rgba(0, 0, 0, 0.35),
+        0 0 0 8px #103a23,
+        0 14px 35px rgba(0, 0, 0, 0.55);
+      cursor: default;
+      display: block;
+    }
+
+    /* Overlay Banner for Pause / Victory */
+    .overlay-modal {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(15, 20, 28, 0.94);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 40px rgba(34, 197, 94, 0.2);
+      padding: 30px 42px;
+      border-radius: 20px;
+      text-align: center;
+      backdrop-filter: blur(16px);
+      z-index: 50;
+      display: none;
+      animation: popIn 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes popIn {
+      from { opacity: 0; transform: translate(-50%, -46%) scale(0.92); }
+      to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    }
+
+    .modal-title {
+      font-size: 2.2rem;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      margin-bottom: 8px;
+    }
+
+    .modal-subtitle {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      margin-bottom: 22px;
+    }
+
+    .modal-primary-btn {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: white;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 700;
+      border: none;
+      padding: 12px 28px;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 4px 18px rgba(16, 185, 129, 0.4);
+      transition: all 0.18s;
+    }
+
+    .modal-primary-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 22px rgba(16, 185, 129, 0.6);
+    }
+
+    /* ==========================================================================
+       BOTTOM SCOREBOARD & CONTROLS HUD
+       ========================================================================== */
+    .scoreboard-bar {
+      width: 100%;
+      max-width: 1080px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 10px 22px;
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      border-radius: 14px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+      z-index: 10;
+    }
+
+    .player-card {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 170px;
+    }
+
+    .player-card.player2 {
+      flex-direction: row-reverse;
+      text-align: right;
+    }
+
+    .player-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 11px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    }
+
+    .player-info-meta {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .player-name-tag {
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #e5e7eb;
+    }
+
+    .player-keys-guide {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .score-cluster {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .big-score {
+      font-size: 2.3rem;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      min-width: 42px;
+      text-align: center;
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .big-score.p1 {
+      color: #60a5fa;
+      text-shadow: 0 0 20px rgba(96, 165, 250, 0.4);
+    }
+
+    .big-score.p2 {
+      color: #f87171;
+      text-shadow: 0 0 20px rgba(248, 113, 113, 0.4);
+    }
+
+    .score-divider {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: rgba(255, 255, 255, 0.2);
+    }
+
+    .match-meta-center {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .target-pill {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent-gold);
+      background: rgba(245, 158, 11, 0.12);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+
+    .rally-tracker {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .kbd-chip {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.65rem;
+      color: #fff;
+    }
+
+    /* Responsiveness for compact screens */
+    @media (max-width: 820px) {
+      body {
+        padding: 6px;
+      }
+      .header-bar, .scoreboard-bar {
+        padding: 8px 12px;
+        gap: 8px;
+      }
+      .brand-title {
+        font-size: 1rem;
+      }
+      .big-score {
+        font-size: 1.8rem;
+      }
+      .player-avatar {
+        width: 36px;
+        height: 36px;
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==========================================================================
+       STEP 2 & 4: TOP CONTROLS & SETTINGS
+       ========================================================================== -->
+  <header class="header-bar">
+    <div class="brand-group">
+      <div class="brand-title">
+        🏓 Table Tennis
+      </div>
+      <div class="brand-badge">PRO TOUR</div>
+    </div>
+
+    <div class="controls-group">
+      <!-- Game Mode (1P vs 2P) -->
+      <div class="setting-item">
+        <span class="setting-label">Mode</span>
+        <div class="pill-group" id="modeGroup">
+          <button class="pill-btn active" data-mode="1p" id="mode1PBtn" title="Play against Computer">👤 1 Player</button>
+          <button class="pill-btn" data-mode="2p" id="mode2PBtn" title="2-Player Local Battle">👥 2 Players</button>
+        </div>
+      </div>
+
+      <!-- Difficulty (Easy, Medium, Hard) -->
+      <div class="setting-item" id="diffSettingItem">
+        <span class="setting-label">AI Level</span>
+        <div class="pill-group" id="diffGroup">
+          <button class="pill-btn difficulty" data-diff="easy">Easy</button>
+          <button class="pill-btn difficulty active" data-diff="medium">Medium</button>
+          <button class="pill-btn difficulty" data-diff="hard">Hard</button>
+        </div>
+      </div>
+
+      <!-- Points to Win -->
+      <div class="setting-item">
+        <span class="setting-label">First to</span>
+        <div class="stepper">
+          <button class="step-btn" id="ptsDecrBtn" title="Decrease points">−</button>
+          <span class="step-value" id="targetScoreDisplay">11</span>
+          <button class="step-btn" id="ptsIncrBtn" title="Increase points">+</button>
+        </div>
+      </div>
+
+      <!-- Quick Audio Toggle & Pause/Restart -->
+      <div class="setting-item">
+        <button class="icon-action-btn" id="soundToggleBtn" title="Toggle Sound FX">
+          <span id="soundIcon">🔊</span> Sound
+        </button>
+        <button class="icon-action-btn" id="pauseBtn" title="Pause Game (Spacebar)">
+          <span id="pauseIcon">⏸</span> Pause
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==========================================================================
+       STEP 1 & 3: GAME ARENA & GREEN PLAYGROUND CANVAS
+       ========================================================================== -->
+  <main class="arena-container">
+    <div class="table-wrapper">
+      <canvas id="gameCanvas" width="1000" height="560"></canvas>
+
+      <!-- Victory / Match Point Modal -->
+      <div class="overlay-modal" id="gameModal">
+        <div class="modal-title" id="modalTitle">WINNER!</div>
+        <div class="modal-subtitle" id="modalSubtitle">Player 1 claimed the championship!</div>
+        <button class="modal-primary-btn" id="modalActionBtn">Play Next Match</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- ==========================================================================
+       STEP 2: BOTTOM SCOREBOARD HUD (ALWAYS VISIBLE)
+       ========================================================================== -->
+  <footer class="scoreboard-bar">
+    <!-- Player 1 Profile & Controls -->
+    <div class="player-card player1">
+      <div class="player-avatar" id="p1Avatar">👤</div>
+      <div class="player-info-meta">
+        <span class="player-name-tag" id="p1NameTag">Player 1</span>
+        <span class="player-keys-guide" id="p1KeysGuide">Move: <kbd class="kbd-chip">↑</kbd> <kbd class="kbd-chip">↓</kbd> or <kbd class="kbd-chip">W</kbd> <kbd class="kbd-chip">S</kbd></span>
+      </div>
+    </div>
+
+    <!-- Center Score & Rally Counter -->
+    <div class="score-cluster">
+      <div class="big-score p1" id="p1ScoreText">0</div>
+      <div class="match-meta-center">
+        <div class="target-pill" id="targetPillBadge">RACE TO 11</div>
+        <div class="rally-tracker">Rally: <span id="rallyCount">0</span> hits</div>
+      </div>
+      <div class="big-score p2" id="p2ScoreText">0</div>
+    </div>
+
+    <!-- Player 2 / Computer Profile -->
+    <div class="player-card player2">
+      <div class="player-avatar" id="p2Avatar">🤖</div>
+      <div class="player-info-meta">
+        <span class="player-name-tag" id="p2NameTag">Computer</span>
+        <span class="player-keys-guide" id="p2KeysGuide">AI Controlled</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ==========================================================================
+       GAME ENGINE SCRIPT
+       ========================================================================== -->
+  <script>
+    (function () {
+      'use strict';
+
+      // --- CANVAS & CONTEXT SETUP ---
+      const canvas = document.getElementById('gameCanvas');
+      const ctx = canvas.getContext('2d');
+
+      const VIRTUAL_WIDTH = 1000;
+      const VIRTUAL_HEIGHT = 560;
+
+      // --- GAME CONFIG & STATE ---
+      const state = {
+        mode: '1p',              // '1p' or '2p'
+        difficulty: 'medium',    // 'easy', 'medium', 'hard'
+        targetScore: 11,
+        p1Score: 0,
+        p2Score: 0,
+        rally: 0,
+        isPaused: false,
+        isGameOver: false,
+        soundEnabled: true,
+        inService: true,
+        serveTimer: 0
+      };
+
+      // --- AI SPEEDS & REACTION ATTRIBUTES ---
+      const DIFFICULTY_PROFILES = {
+        easy: { speed: 4.6, errorMargin: 38, reactionLag: 0.14 },
+        medium: { speed: 7.2, errorMargin: 18, reactionLag: 0.22 },
+        hard: { speed: 10.4, errorMargin: 4, reactionLag: 0.35 }
+      };
+
+      // --- PADDLES & BALL DEFINITIONS ---
+      // User requested: Playground GREEN, Paddles BEIGE, Ball WHITE
+      const PADDLE_WIDTH = 16;
+      const PADDLE_HEIGHT = 92;
+      const PADDLE_SPEED = 8.5;
+      const PADDLE_INSET = 30;
+
+      const p1 = {
+        x: PADDLE_INSET,
+        y: VIRTUAL_HEIGHT / 2 - PADDLE_HEIGHT / 2,
+        width: PADDLE_WIDTH,
+        height: PADDLE_HEIGHT,
+        vy: 0,
+        color: '#e8d3b9',       // Beige Blade
+        accentColor: '#cfb596', // Beige Grip/Trim
+        score: 0
+      };
+
+      const p2 = {
+        x: VIRTUAL_WIDTH - PADDLE_INSET - PADDLE_WIDTH,
+        y: VIRTUAL_HEIGHT / 2 - PADDLE_HEIGHT / 2,
+        width: PADDLE_WIDTH,
+        height: PADDLE_HEIGHT,
+        vy: 0,
+        color: '#e8d3b9',       // Beige Blade
+        accentColor: '#cfb596', // Beige Grip/Trim
+        score: 0
+      };
+
+      const BALL_RADIUS = 9;
+      const INITIAL_BALL_SPEED = 7.5;
+      const MAX_BALL_SPEED = 18.0;
+
+      const ball = {
+        x: VIRTUAL_WIDTH / 2,
+        y: VIRTUAL_HEIGHT / 2,
+        radius: BALL_RADIUS,
+        vx: INITIAL_BALL_SPEED,
+        vy: 0,
+        speed: INITIAL_BALL_SPEED,
+        color: '#ffffff',       // Ball WHITE
+        trail: []
+      };
+
+      // Visual particle sparks on paddle hit
+      let particles = [];
+
+      // --- WEB AUDIO API SOUND SYSTEM ---
+      let audioCtx = null;
+
+      function initAudio() {
+        if (!audioCtx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (AudioContext) {
+            audioCtx = new AudioContext();
+          }
+        }
+        if (audioCtx && audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+      }
+
+      function playSound(type) {
+        if (!state.soundEnabled) return;
+        try {
+          initAudio();
+          if (!audioCtx) return;
+
+          const now = audioCtx.currentTime;
+
+          if (type === 'paddle') {
+            // Crisp wooden paddle hit: rapid pitch sweep with gentle decay
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(420, now);
+            osc.frequency.exponentialRampToValueAtTime(140, now + 0.08);
+
+            gain.gain.setValueAtTime(0.45, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            osc.start(now);
+            osc.stop(now + 0.09);
+          } else if (type === 'wall') {
+            // Soft wall cushion bounce
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(220, now);
+            osc.frequency.exponentialRampToValueAtTime(120, now + 0.06);
+
+            gain.gain.setValueAtTime(0.2, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            osc.start(now);
+            osc.stop(now + 0.07);
+          } else if (type === 'score') {
+            // Pleasant point chime
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(587.33, now); // D5
+            osc.frequency.exponentialRampToValueAtTime(880, now + 0.18); // A5
+
+            gain.gain.setValueAtTime(0.3, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            osc.start(now);
+            osc.stop(now + 0.26);
+          } else if (type === 'win') {
+            // Triumphant chord
+            const freqs = [523.25, 659.25, 783.99, 1046.50]; // C Major
+            freqs.forEach((freq, idx) => {
+              const osc = audioCtx.createOscillator();
+              const gain = audioCtx.createGain();
+              osc.type = 'triangle';
+              osc.frequency.setValueAtTime(freq, now + idx * 0.07);
+              gain.gain.setValueAtTime(0.25, now + idx * 0.07);
+              gain.gain.exponentialRampToValueAtTime(0.001, now + 0.6 + idx * 0.07);
+              osc.connect(gain);
+              gain.connect(audioCtx.destination);
+              osc.start(now + idx * 0.07);
+              osc.stop(now + 0.65 + idx * 0.07);
+            });
+          }
+        } catch (e) {
+          // Audio errors safely ignored
+        }
+      }
+
+      // --- KEYBOARD CONTROLS ---
+      const keys = {};
+
+      window.addEventListener('keydown', (e) => {
+        initAudio();
+        // Prevent window scrolling on arrow keys or space
+        if (['ArrowUp', 'ArrowDown', 'Space'].includes(e.code)) {
+          e.preventDefault();
+        }
+
+        keys[e.code] = true;
+
+        if (e.code === 'Space') {
+          togglePause();
+        }
+      });
+
+      window.addEventListener('keyup', (e) => {
+        keys[e.code] = false;
+      });
+
+      // --- DOM ELEMENT REFERENCES ---
+      const mode1PBtn = document.getElementById('mode1PBtn');
+      const mode2PBtn = document.getElementById('mode2PBtn');
+      const diffGroup = document.getElementById('diffGroup');
+      const diffSettingItem = document.getElementById('diffSettingItem');
+      const diffButtons = document.querySelectorAll('.pill-btn.difficulty');
+      const ptsDecrBtn = document.getElementById('ptsDecrBtn');
+      const ptsIncrBtn = document.getElementById('ptsIncrBtn');
+      const targetScoreDisplay = document.getElementById('targetScoreDisplay');
+      const targetPillBadge = document.getElementById('targetPillBadge');
+      const soundToggleBtn = document.getElementById('soundToggleBtn');
+      const soundIcon = document.getElementById('soundIcon');
+      const pauseBtn = document.getElementById('pauseBtn');
+      const pauseIcon = document.getElementById('pauseIcon');
+
+      const p1ScoreText = document.getElementById('p1ScoreText');
+      const p2ScoreText = document.getElementById('p2ScoreText');
+      const rallyCountText = document.getElementById('rallyCount');
+      const p1NameTag = document.getElementById('p1NameTag');
+      const p2NameTag = document.getElementById('p2NameTag');
+      const p2Avatar = document.getElementById('p2Avatar');
+      const p1KeysGuide = document.getElementById('p1KeysGuide');
+      const p2KeysGuide = document.getElementById('p2KeysGuide');
+
+      const gameModal = document.getElementById('gameModal');
+      const modalTitle = document.getElementById('modalTitle');
+      const modalSubtitle = document.getElementById('modalSubtitle');
+      const modalActionBtn = document.getElementById('modalActionBtn');
+
+      // --- EVENT HANDLERS ---
+      // Mode Selection (1 Player vs 2 Players)
+      mode1PBtn.addEventListener('click', () => setMode('1p'));
+      mode2PBtn.addEventListener('click', () => setMode('2p'));
+
+      function setMode(newMode) {
+        initAudio();
+        state.mode = newMode;
+        if (newMode === '1p') {
+          mode1PBtn.classList.add('active');
+          mode2PBtn.classList.remove('active');
+          diffSettingItem.style.opacity = '1';
+          diffButtons.forEach(btn => btn.disabled = false);
+          p2NameTag.textContent = 'Computer';
+          p2Avatar.textContent = '🤖';
+          p1KeysGuide.innerHTML = 'Move: <kbd class="kbd-chip">↑</kbd> <kbd class="kbd-chip">↓</kbd> or <kbd class="kbd-chip">W</kbd> <kbd class="kbd-chip">S</kbd>';
+          p2KeysGuide.textContent = 'AI Controlled';
+        } else {
+          mode2PBtn.classList.add('active');
+          mode1PBtn.classList.remove('active');
+          diffSettingItem.style.opacity = '0.35';
+          diffButtons.forEach(btn => btn.disabled = true);
+          p2NameTag.textContent = 'Player 2';
+          p2Avatar.textContent = '👥';
+          p1KeysGuide.innerHTML = 'P1 Move: <kbd class="kbd-chip">W</kbd> <kbd class="kbd-chip">S</kbd>';
+          p2KeysGuide.innerHTML = 'P2 Move: <kbd class="kbd-chip">↑</kbd> <kbd class="kbd-chip">↓</kbd>';
+        }
+        resetMatch();
+      }
+
+      // Difficulty Buttons
+      diffButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          initAudio();
+          diffButtons.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          state.difficulty = btn.dataset.diff;
+          resetBall();
+        });
+      });
+
+      // Target Points Stepper
+      ptsDecrBtn.addEventListener('click', () => {
+        initAudio();
+        if (state.targetScore > 3) {
+          state.targetScore -= 2;
+          updateTargetUI();
+        }
+      });
+
+      ptsIncrBtn.addEventListener('click', () => {
+        initAudio();
+        if (state.targetScore < 31) {
+          state.targetScore += 2;
+          updateTargetUI();
+        }
+      });
+
+      function updateTargetUI() {
+        targetScoreDisplay.textContent = state.targetScore;
+        targetPillBadge.textContent = `RACE TO ${state.targetScore}`;
+        checkMatchEnd();
+      }
+
+      // Audio Toggle
+      soundToggleBtn.addEventListener('click', () => {
+        initAudio();
+        state.soundEnabled = !state.soundEnabled;
+        soundIcon.textContent = state.soundEnabled ? '🔊' : '🔇';
+        soundToggleBtn.style.opacity = state.soundEnabled ? '1' : '0.6';
+      });
+
+      // Pause Game
+      pauseBtn.addEventListener('click', togglePause);
+
+      function togglePause() {
+        initAudio();
+        if (state.isGameOver) return;
+        state.isPaused = !state.isPaused;
+        pauseIcon.textContent = state.isPaused ? '▶' : '⏸';
+        pauseBtn.innerHTML = `<span id="pauseIcon">${state.isPaused ? '▶' : '⏸'}</span> ${state.isPaused ? 'Resume' : 'Pause'}`;
+      }
+
+      // Modal Button
+      modalActionBtn.addEventListener('click', () => {
+        gameModal.style.display = 'none';
+        resetMatch();
+      });
+
+      // --- GAME MECHANICS & LOGIC ---
+      function spawnHitParticles(x, y, count = 12) {
+        for (let i = 0; i < count; i++) {
+          const angle = Math.random() * Math.PI * 2;
+          const speed = 1.5 + Math.random() * 4.5;
+          particles.push({
+            x: x,
+            y: y,
+            vx: Math.cos(angle) * speed,
+            vy: Math.sin(angle) * speed,
+            radius: 1.5 + Math.random() * 2.5,
+            alpha: 1,
+            color: Math.random() > 0.5 ? '#ffffff' : '#fef3c7'
+          });
+        }
+      }
+
+      function resetBall(servingPlayer = 1) {
+        ball.x = VIRTUAL_WIDTH / 2;
+        ball.y = VIRTUAL_HEIGHT / 2;
+        ball.speed = INITIAL_BALL_SPEED;
+        ball.trail = [];
+        state.rally = 0;
+        rallyCountText.textContent = '0';
+
+        // Angle between -25 and +25 degrees
+        const angle = (Math.random() * 0.7 - 0.35);
+        const direction = servingPlayer === 1 ? 1 : -1;
+        ball.vx = direction * ball.speed * Math.cos(angle);
+        ball.vy = ball.speed * Math.sin(angle);
+
+        state.inService = true;
+        state.serveTimer = 35; // Short delay before launching
+      }
+
+      function resetMatch() {
+        state.p1Score = 0;
+        state.p2Score = 0;
+        state.isGameOver = false;
+        state.isPaused = false;
+        p1ScoreText.textContent = '0';
+        p2ScoreText.textContent = '0';
+        gameModal.style.display = 'none';
+        p1.y = VIRTUAL_HEIGHT / 2 - PADDLE_HEIGHT / 2;
+        p2.y = VIRTUAL_HEIGHT / 2 - PADDLE_HEIGHT / 2;
+        resetBall(Math.random() > 0.5 ? 1 : 2);
+      }
+
+      function checkMatchEnd() {
+        if (state.isGameOver) return;
+
+        if (state.p1Score >= state.targetScore && state.p1Score - state.p2Score >= 2) {
+          triggerGameOver(state.mode === '2p' ? 'Player 1' : 'You');
+        } else if (state.p2Score >= state.targetScore && state.p2Score - state.p1Score >= 2) {
+          triggerGameOver(state.mode === '2p' ? 'Player 2' : 'Computer');
+        }
+      }
+
+      function triggerGameOver(winner) {
+        state.isGameOver = true;
+        playSound('win');
+        modalTitle.textContent = `${winner.toUpperCase()} WINS!`;
+        modalSubtitle.textContent = `Championship finished: ${state.p1Score} - ${state.p2Score}`;
+        modalActionBtn.textContent = 'Play Again';
+        gameModal.style.display = 'block';
+      }
+
+      // --- UPDATE CYCLE ---
+      function update() {
+        if (state.isPaused || state.isGameOver) return;
+
+        // Service countdown delay
+        if (state.inService) {
+          state.serveTimer--;
+          if (state.serveTimer <= 0) {
+            state.inService = false;
+          }
+          return;
+        }
+
+        // --- P1 PADDLE CONTROL ---
+        // In 1P: Up/Down Arrow or W/S
+        // In 2P: W/S exclusively for P1
+        let p1Up = keys['KeyW'] || (state.mode === '1p' && keys['ArrowUp']);
+        let p1Down = keys['KeyS'] || (state.mode === '1p' && keys['ArrowDown']);
+
+        if (p1Up) {
+          p1.y -= PADDLE_SPEED;
+        }
+        if (p1Down) {
+          p1.y += PADDLE_SPEED;
+        }
+
+        // Clamp P1 inside court
+        p1.y = Math.max(14, Math.min(VIRTUAL_HEIGHT - PADDLE_HEIGHT - 14, p1.y));
+
+        // --- P2 PADDLE CONTROL (AI vs PLAYER 2) ---
+        if (state.mode === '2p') {
+          // Player 2 uses Arrow Keys
+          if (keys['ArrowUp']) {
+            p2.y -= PADDLE_SPEED;
+          }
+          if (keys['ArrowDown']) {
+            p2.y += PADDLE_SPEED;
+          }
+        } else {
+          // AI Logic with difficulty profile
+          const profile = DIFFICULTY_PROFILES[state.difficulty] || DIFFICULTY_PROFILES.medium;
+          const paddleCenter = p2.y + p2.height / 2;
+
+          // Only react actively when ball moves towards AI side or is nearby
+          let targetY = ball.y;
+
+          // AI Reaction delay and error offset
+          if (ball.vx > 0) {
+            const distance = p2.x - ball.x;
+            const predictedY = ball.y + ball.vy * (distance / ball.vx);
+            targetY = predictedY + (Math.sin(Date.now() * 0.003) * profile.errorMargin);
+          } else {
+            // Idle return to center
+            targetY = VIRTUAL_HEIGHT / 2;
+          }
+
+          if (Math.abs(paddleCenter - targetY) > 6) {
+            if (paddleCenter < targetY) {
+              p2.y += Math.min(profile.speed, targetY - paddleCenter);
+            } else {
+              p2.y -= Math.min(profile.speed, paddleCenter - targetY);
+            }
+          }
+        }
+
+        // Clamp P2 inside court
+        p2.y = Math.max(14, Math.min(VIRTUAL_HEIGHT - PADDLE_HEIGHT - 14, p2.y));
+
+        // --- BALL TRAIL & MOVEMENT ---
+        ball.trail.push({ x: ball.x, y: ball.y, alpha: 0.35 });
+        if (ball.trail.length > 5) {
+          ball.trail.shift();
+        }
+
+        ball.x += ball.vx;
+        ball.y += ball.vy;
+
+        // Top & Bottom Table Cushions Bounce
+        const tableTop = 14 + ball.radius;
+        const tableBottom = VIRTUAL_HEIGHT - 14 - ball.radius;
+
+        if (ball.y <= tableTop) {
+          ball.y = tableTop;
+          ball.vy = -ball.vy;
+          playSound('wall');
+          spawnHitParticles(ball.x, tableTop, 6);
+        } else if (ball.y >= tableBottom) {
+          ball.y = tableBottom;
+          ball.vy = -ball.vy;
+          playSound('wall');
+          spawnHitParticles(ball.x, tableBottom, 6);
+        }
+
+        // --- PADDLE COLLISIONS ---
+        // Player 1 Collision (Left Paddle)
+        if (ball.vx < 0 &&
+            ball.x - ball.radius <= p1.x + p1.width &&
+            ball.x + ball.radius >= p1.x &&
+            ball.y >= p1.y - 4 &&
+            ball.y <= p1.y + p1.height + 4) {
+
+          ball.x = p1.x + p1.width + ball.radius; // Resolve penetration
+          handlePaddleHit(p1, 1);
+        }
+
+        // Player 2 Collision (Right Paddle)
+        if (ball.vx > 0 &&
+            ball.x + ball.radius >= p2.x &&
+            ball.x - ball.radius <= p2.x + p2.width &&
+            ball.y >= p2.y - 4 &&
+            ball.y <= p2.y + p2.height + 4) {
+
+          ball.x = p2.x - ball.radius; // Resolve penetration
+          handlePaddleHit(p2, -1);
+        }
+
+        // --- SCORING GOAL BOUNDARIES ---
+        // Ball went past left side -> Point for P2
+        if (ball.x + ball.radius < 0) {
+          state.p2Score++;
+          p2ScoreText.textContent = state.p2Score;
+          playSound('score');
+          checkMatchEnd();
+          if (!state.isGameOver) resetBall(1);
+        }
+
+        // Ball went past right side -> Point for P1
+        if (ball.x - ball.radius > VIRTUAL_WIDTH) {
+          state.p1Score++;
+          p1ScoreText.textContent = state.p1Score;
+          playSound('score');
+          checkMatchEnd();
+          if (!state.isGameOver) resetBall(2);
+        }
+
+        // Update Particle Sparks
+        for (let i = particles.length - 1; i >= 0; i--) {
+          const p = particles[i];
+          p.x += p.vx;
+          p.y += p.vy;
+          p.alpha -= 0.035;
+          if (p.alpha <= 0) {
+            particles.splice(i, 1);
+          }
+        }
+      }
+
+      function handlePaddleHit(paddle, dir) {
+        state.rally++;
+        rallyCountText.textContent = state.rally;
+
+        // Calculate bounce angle based on point of contact on paddle
+        const hitOffset = (ball.y - (paddle.y + paddle.height / 2)) / (paddle.height / 2);
+        const clampedOffset = Math.max(-1, Math.min(1, hitOffset));
+        const maxAngle = (Math.PI / 4) * 0.85; // Max 38 degrees
+        const bounceAngle = clampedOffset * maxAngle;
+
+        // Speed increases by 3.5% each hit up to cap
+        ball.speed = Math.min(MAX_BALL_SPEED, ball.speed * 1.035);
+
+        ball.vx = dir * ball.speed * Math.cos(bounceAngle);
+        ball.vy = ball.speed * Math.sin(bounceAngle);
+
+        playSound('paddle');
+        spawnHitParticles(ball.x, ball.y, 14);
+      }
+
+      // --- RENDER CYCLE ---
+      function draw() {
+        ctx.clearRect(0, 0, VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
+
+        // 1. Table Field (Playground GREEN with realistic matte finish)
+        const tableGrad = ctx.createLinearGradient(0, 0, 0, VIRTUAL_HEIGHT);
+        tableGrad.addColorStop(0, '#1c623b');
+        tableGrad.addColorStop(0.5, '#175432');
+        tableGrad.addColorStop(1, '#114227');
+        ctx.fillStyle = tableGrad;
+        ctx.fillRect(0, 0, VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
+
+        // Table Inset White Perimeter Lines
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 4;
+        ctx.strokeRect(14, 14, VIRTUAL_WIDTH - 28, VIRTUAL_HEIGHT - 28);
+
+        // Table Center Dividing Horizontal Line (For doubles / regulation look)
+        ctx.beginPath();
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
+        ctx.lineWidth = 2;
+        ctx.moveTo(14, VIRTUAL_HEIGHT / 2);
+        ctx.lineTo(VIRTUAL_WIDTH - 14, VIRTUAL_HEIGHT / 2);
+        ctx.stroke();
+
+        // 2. Net Rendering (Realistic vertical mesh with white top band)
+        const netX = VIRTUAL_WIDTH / 2;
+        
+        // Net Post Shadows
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
+        ctx.fillRect(netX - 6, 8, 12, VIRTUAL_HEIGHT - 16);
+
+        // Net Mesh Pattern
+        ctx.beginPath();
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([4, 4]);
+        ctx.moveTo(netX, 10);
+        ctx.lineTo(netX, VIRTUAL_HEIGHT - 10);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // White Net Top Tape
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(netX - 2.5, 6, 5, VIRTUAL_HEIGHT - 12);
+
+        // 3. Paddles (BEIGE Table Tennis Rackets)
+        drawPaddle(p1);
+        drawPaddle(p2);
+
+        // 4. Ball Trail & Ball (WHITE)
+        ball.trail.forEach((t, index) => {
+          ctx.beginPath();
+          ctx.arc(t.x, t.y, ball.radius * (0.4 + (index / ball.trail.length) * 0.5), 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(255, 255, 255, ${0.08 * (index + 1)})`;
+          ctx.fill();
+        });
+
+        // Main Ball
+        ctx.save();
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.35)';
+        ctx.shadowBlur = 10;
+        ctx.shadowOffsetY = 4;
+
+        ctx.beginPath();
+        ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+        
+        // 3D subtle gradient for ball
+        const ballGrad = ctx.createRadialGradient(
+          ball.x - ball.radius * 0.3,
+          ball.y - ball.radius * 0.3,
+          1,
+          ball.x,
+          ball.y,
+          ball.radius
+        );
+        ballGrad.addColorStop(0, '#ffffff');
+        ballGrad.addColorStop(0.7, '#f4f4f5');
+        ballGrad.addColorStop(1, '#d1d5db');
+
+        ctx.fillStyle = ballGrad;
+        ctx.fill();
+        ctx.restore();
+
+        // 5. Spark Hit Particles
+        particles.forEach(p => {
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+          ctx.fillStyle = p.color;
+          ctx.globalAlpha = p.alpha;
+          ctx.fill();
+          ctx.globalAlpha = 1;
+        });
+
+        // 6. Service / Pause indicator in Canvas
+        if (state.inService && !state.isPaused && !state.isGameOver) {
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+          ctx.font = '700 16px Outfit, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('READY...', VIRTUAL_WIDTH / 2, VIRTUAL_HEIGHT / 2 - 28);
+        }
+
+        if (state.isPaused) {
+          ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+          ctx.fillRect(0, 0, VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
+          ctx.fillStyle = '#ffffff';
+          ctx.font = '800 32px Outfit, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('PAUSED', VIRTUAL_WIDTH / 2, VIRTUAL_HEIGHT / 2);
+          ctx.font = '500 14px Outfit, sans-serif';
+          ctx.fillStyle = '#9ca3af';
+          ctx.fillText('Press Spacebar to resume', VIRTUAL_WIDTH / 2, VIRTUAL_HEIGHT / 2 + 32);
+        }
+      }
+
+      function drawPaddle(paddle) {
+        ctx.save();
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.4)';
+        ctx.shadowBlur = 12;
+        ctx.shadowOffsetX = paddle.x < VIRTUAL_WIDTH / 2 ? 4 : -4;
+
+        // Rounded Beige Paddle Body
+        const r = 6;
+        ctx.beginPath();
+        ctx.moveTo(paddle.x + r, paddle.y);
+        ctx.lineTo(paddle.x + paddle.width - r, paddle.y);
+        ctx.quadraticCurveTo(paddle.x + paddle.width, paddle.y, paddle.x + paddle.width, paddle.y + r);
+        ctx.lineTo(paddle.x + paddle.width, paddle.y + paddle.height - r);
+        ctx.quadraticCurveTo(paddle.x + paddle.width, paddle.y + paddle.height, paddle.x + paddle.width - r, paddle.y + paddle.height);
+        ctx.lineTo(paddle.x + r, paddle.y + paddle.height);
+        ctx.quadraticCurveTo(paddle.x, paddle.y + paddle.height, paddle.x, paddle.y + paddle.height - r);
+        ctx.lineTo(paddle.x, paddle.y + r);
+        ctx.quadraticCurveTo(paddle.x, paddle.y, paddle.x + r, paddle.y);
+        ctx.closePath();
+
+        // Wooden/Beige gradient
+        const pGrad = ctx.createLinearGradient(paddle.x, paddle.y, paddle.x + paddle.width, paddle.y);
+        pGrad.addColorStop(0, '#f2e3cf');
+        pGrad.addColorStop(0.5, '#e4ceb1');
+        pGrad.addColorStop(1, '#cbb092');
+
+        ctx.fillStyle = pGrad;
+        ctx.fill();
+
+        // Subtle bevel border
+        ctx.strokeStyle = '#bfa281';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        // Paddle Rubber/Blade Texture Line
+        ctx.beginPath();
+        ctx.strokeStyle = 'rgba(0, 0, 0, 0.12)';
+        ctx.lineWidth = 2;
+        ctx.moveTo(paddle.x + paddle.width / 2, paddle.y + 8);
+        ctx.lineTo(paddle.x + paddle.width / 2, paddle.y + paddle.height - 8);
+        ctx.stroke();
+
+        ctx.restore();
+      }
+
+      // --- MAIN GAME LOOP ---
+      function loop() {
+        update();
+        draw();
+        requestAnimationFrame(loop);
+      }
+
+      // Start Match
+      resetMatch();
+      requestAnimationFrame(loop);
+
+    })();
+  </script>
+</body>
+</html>
