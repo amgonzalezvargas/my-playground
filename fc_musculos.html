@@ -1,0 +1,1862 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="no-referrer">
+    <title>AnatoFlash - 100 Músculos de Anatomía & Fitness</title>
+    <style>
+        :root {
+            --primary: #1e293b;
+            --primary-light: #334155;
+            --accent: #10b981;
+            --accent-hover: #059669;
+            --blue: #3b82f6;
+            --blue-light: #eff6ff;
+            --bg: #0f172a;
+            --card-bg: #ffffff;
+            --text-dark: #0f172a;
+            --text-muted: #64748b;
+            --shadow: 0 20px 45px -15px rgba(0, 0, 0, 0.45);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            color: #f8fafc;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px 12px 30px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 12px;
+            width: 100%;
+            max-width: 520px;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(to right, #38bdf8, #818cf8, #34d399);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+            margin-bottom: 4px;
+        }
+
+        .subtitle {
+            font-size: 0.8rem;
+            color: #94a3b8;
+        }
+
+        /* Filtros y Barra de Control Superior */
+        .top-bar {
+            width: 100%;
+            max-width: 520px;
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+            align-items: center;
+        }
+
+        .region-select {
+            flex: 1;
+            padding: 9px 12px;
+            border-radius: 10px;
+            border: 1px solid #334155;
+            background: #1e293b;
+            color: #f8fafc;
+            font-size: 0.85rem;
+            font-weight: 600;
+            outline: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .region-select:hover, .region-select:focus {
+            border-color: #38bdf8;
+            box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+        }
+
+        .badge-cat {
+            background: rgba(56, 189, 248, 0.15);
+            color: #38bdf8;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-block;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 520px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Contenedor de la Tarjeta 3D */
+        .card-container {
+            perspective: 1200px;
+            width: 100%;
+            height: 625px;
+            cursor: pointer;
+            user-select: none;
+            position: relative;
+        }
+
+        .card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.55s cubic-bezier(0.34, 1.2, 0.64, 1);
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .card.is-flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 24px;
+            padding: 16px 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        /* ================= CARA FRONTAL ================= */
+        .card-front {
+            background: var(--card-bg);
+            color: var(--text-dark);
+            justify-content: space-between;
+        }
+
+        .card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .flip-hint {
+            font-size: 0.72rem;
+            color: #94a3b8;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .info-section {
+            border-radius: 12px;
+            padding: 9px 12px;
+            font-size: 0.86rem;
+            line-height: 1.35;
+        }
+
+        .loc-header {
+            background: #f0f9ff;
+            border-left: 4px solid #0284c7;
+            color: #0c4a6e;
+        }
+
+        .use-footer {
+            background: #ecfdf5;
+            border-left: 4px solid #059669;
+            color: #064e3b;
+        }
+
+        .label {
+            font-weight: 800;
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            display: block;
+            margin-bottom: 3px;
+        }
+        .loc-header .label { color: #0369a1; }
+        .use-footer .label { color: #047857; }
+
+        /* CONTENEDOR DE IMAGEN (FRONTAL Y TRASERA) */
+        .image-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background: radial-gradient(circle, #ffffff 60%, #f1f5f9 100%);
+            border-radius: 14px;
+            margin: 6px 0;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+            min-height: 220px;
+        }
+
+        .image-container img {
+            max-width: 95%;
+            max-height: 245px;
+            object-fit: contain;
+            transition: opacity 0.3s ease, transform 0.3s ease, filter 0.3s ease;
+        }
+
+        .image-container img.loading {
+            opacity: 0;
+        }
+
+        /* EFECTO BLUR FRONTAL: texto 100% ilegible, silueta visible */
+        #m-img-front,
+        .image-container img.front-blurred-img {
+            filter: blur(14px) contrast(115%) saturate(1.1) !important;
+            transform: scale(1.12) !important;
+            user-select: none;
+        }
+
+        /* IMAGEN TRASERA NÍTIDA */
+        #m-img-back,
+        .image-container img.back-sharp-img {
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.12)) !important;
+            transform: none !important;
+        }
+
+        .blur-pill {
+            position: absolute;
+            bottom: 8px;
+            background: rgba(15, 23, 42, 0.78);
+            backdrop-filter: blur(4px);
+            color: #e2e8f0;
+            font-size: 0.68rem;
+            font-weight: 600;
+            padding: 3px 10px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.25);
+        }
+
+        .spinner {
+            position: absolute;
+            width: 32px;
+            height: 32px;
+            border: 3px solid #cbd5e1;
+            border-top-color: #3b82f6;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ================= CARA TRASERA ================= */
+        .card-back {
+            background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
+            color: #ffffff;
+            transform: rotateY(180deg);
+            justify-content: space-between;
+            align-items: center;
+            text-align: center;
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            box-shadow: inset 0 0 40px rgba(56, 189, 248, 0.05);
+            padding: 16px 18px;
+        }
+
+        .card-back-header {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+
+        .name-es {
+            font-size: 1.75rem;
+            font-weight: 800;
+            line-height: 1.15;
+            margin: 4px 0 2px;
+            color: #f8fafc;
+        }
+
+        .name-en {
+            font-size: 1.05rem;
+            font-weight: 500;
+            color: #38bdf8;
+            font-style: italic;
+        }
+
+        .back-image-container {
+            background: radial-gradient(circle, #ffffff 65%, #f8fafc 100%);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            width: 100%;
+            margin: 6px 0;
+            min-height: 240px;
+        }
+
+        .back-sharp-img {
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.12));
+            transform: none;
+        }
+
+        .back-footer {
+            width: 100%;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* BOTÓN DE YOUTUBE */
+        .btn-yt {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #e11d48, #be123c);
+            color: #ffffff !important;
+            text-decoration: none;
+            font-size: 0.8rem;
+            font-weight: 700;
+            padding: 7px 15px;
+            border-radius: 20px;
+            box-shadow: 0 4px 12px rgba(225, 29, 72, 0.35);
+            transition: all 0.2s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+        }
+
+        .btn-yt:hover {
+            background: linear-gradient(135deg, #f43f5e, #e11d48);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(225, 29, 72, 0.5);
+            color: #ffffff !important;
+        }
+
+        .btn-yt svg {
+            width: 17px;
+            height: 17px;
+            fill: currentColor;
+            flex-shrink: 0;
+        }
+
+        .flip-hint-back {
+            font-size: 0.72rem;
+            color: #94a3b8;
+            background: rgba(255, 255, 255, 0.06);
+            padding: 3px 12px;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        /* ANIMACIÓN DE BARAJADO */
+        @keyframes shuffleDeck {
+            0% { transform: scale(1) rotate(0deg); }
+            30% { transform: scale(0.95) rotate(-3deg) translateX(-15px); }
+            70% { transform: scale(0.97) rotate(2deg) translateX(12px); }
+            100% { transform: scale(1) rotate(0deg); }
+        }
+
+        .card.is-shuffling {
+            animation: shuffleDeck 0.45s cubic-bezier(0.34, 1.3, 0.64, 1);
+        }
+
+        /* TOAST DE CONFIRMACIÓN */
+        .toast-shuffle {
+            position: fixed;
+            top: 20px;
+            background: rgba(16, 185, 129, 0.95);
+            backdrop-filter: blur(8px);
+            color: white;
+            font-weight: 700;
+            font-size: 0.84rem;
+            padding: 8px 18px;
+            border-radius: 20px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            pointer-events: none;
+            opacity: 0;
+            transform: translateY(-12px);
+            transition: all 0.3s cubic-bezier(0.34, 1.4, 0.64, 1);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .toast-shuffle.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* BARRA DE PROGRESO */
+        .progress-wrapper {
+            width: 100%;
+            margin-top: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #1e293b;
+            border-radius: 4px;
+            overflow: hidden;
+            border: 1px solid #334155;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(to right, #38bdf8, #10b981);
+            width: 0%;
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .progress-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.78rem;
+            color: #94a3b8;
+            font-weight: 600;
+        }
+
+        /* CONTROLES INFERIORES */
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr 1.1fr 1fr;
+            gap: 10px;
+            margin-top: 12px;
+            width: 100%;
+        }
+
+        button {
+            padding: 13px 10px;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            user-select: none;
+        }
+
+        button:active {
+            transform: scale(0.96);
+        }
+
+        .btn-nav {
+            background: #1e293b;
+            color: #f1f5f9;
+            border: 1px solid #334155;
+        }
+        .btn-nav:hover {
+            background: #334155;
+            border-color: #475569;
+        }
+
+        .btn-main {
+            background: linear-gradient(135deg, #059669, #10b981);
+            color: white;
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+        }
+        .btn-main:hover {
+            background: linear-gradient(135deg, #047857, #059669);
+        }
+
+        /* ATAJOS DE TECLADO */
+        .shortcuts {
+            margin-top: 14px;
+            font-size: 0.72rem;
+            color: #64748b;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .kbd {
+            background: #1e293b;
+            border: 1px solid #334155;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #94a3b8;
+            font-weight: 600;
+        }
+
+        @media (max-width: 480px) {
+            .card-container { height: 580px; }
+            .name-es { font-size: 1.5rem; }
+            .name-en { font-size: 0.95rem; }
+            .info-section { font-size: 0.82rem; }
+            .shortcuts { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>AnatoFlash 100</h1>
+    <p class="subtitle">Tarjetas Interactivas de Anatomía Muscular & Fitness</p>
+</header>
+
+<div class="top-bar">
+    <select id="region-filter" class="region-select" onchange="changeRegion(this.value)">
+        <option value="ALL">🌟 Todos los Músculos (100)</option>
+        <option value="Pecho y Tórax">🫁 Pecho y Tórax</option>
+        <option value="Espalda y Cuello">🏹 Espalda y Cuello</option>
+        <option value="Hombros y Escápula">🛡️ Hombros y Escápula</option>
+        <option value="Brazos y Manos">💪 Brazos y Manos</option>
+        <option value="Core y Abdomen">🧱 Core y Abdomen</option>
+        <option value="Glúteos y Cadera">⚡ Glúteos y Cadera</option>
+        <option value="Muslo (Cuádriceps/Isquios/Aductores)">🦵 Muslo (Cuádriceps/Isquios)</option>
+        <option value="Pierna, Pantorrilla y Pie">🏃 Pierna, Pantorrilla y Pie</option>
+    </select>
+</div>
+
+<div class="container">
+    <div class="card-container" onclick="flipCard()" title="Haz clic o pulsa ESPACIO para girar">
+        <div class="card" id="card">
+            <!-- CARA FRONTAL (PISTAS CON IMAGEN BLURRED) -->
+            <div class="card-face card-front">
+                <div class="card-top">
+                    <span class="badge-cat" id="badge-cat">PECHO</span>
+                    <span class="flip-hint">🔄 Toca para voltear</span>
+                </div>
+
+                <div class="info-section loc-header">
+                    <span class="label">📍 Ubicación & Inserciones</span>
+                    <div id="m-loc">Cargando datos anatómicos...</div>
+                </div>
+
+                <div class="image-container">
+                    <div class="spinner" id="img-spinner-front"></div>
+                    <img id="m-img-front" src="" alt="Ilustración anatómica (desenfocada)" referrerpolicy="no-referrer" class="loading front-blurred-img">
+                    <span class="blur-pill">🔒 Texto desenfocado • Gira para ver detalles</span>
+                </div>
+
+                <div class="info-section use-footer">
+                    <span class="label">🏋️ Función Deportiva & Fitness</span>
+                    <div id="m-use">Cargando ejercicios...</div>
+                </div>
+            </div>
+
+            <!-- CARA TRASERA (RESPUESTA E IMAGEN NÍTIDA) -->
+            <div class="card-face card-back">
+                <div class="card-back-header">
+                    <span class="badge-cat" id="back-cat">PECHO</span>
+                    <h2 class="name-es" id="m-es">Nombre en Español</h2>
+                    <div class="name-en" id="m-en">English / Latin Name</div>
+                </div>
+
+                <div class="image-container back-image-container">
+                    <div class="spinner" id="img-spinner-back"></div>
+                    <img id="m-img-back" src="" alt="Ilustración anatómica nítida" referrerpolicy="no-referrer" class="loading back-sharp-img">
+                </div>
+
+                <div class="back-footer">
+                    <a id="m-yt-link" href="#" target="_blank" rel="noopener noreferrer" class="btn-yt" onclick="event.stopPropagation()" title="Ver tutoriales de ejercicios en YouTube">
+                        <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                        <span>Ver ejercicios en YouTube</span>
+                    </a>
+                    <span class="flip-hint-back">🔄 Toca o pulsa ESPACIO para volver</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast-shuffle">🔀 ¡Cartas rebarajadas aleatoriamente!</div>
+
+    <!-- PROGRESO -->
+    <div class="progress-wrapper">
+        <div class="progress-bar"><div class="progress-fill" id="fill"></div></div>
+        <div class="progress-meta">
+            <span id="count">Músculo 1 de 100</span>
+            <span id="region-status">Todos (100)</span>
+        </div>
+    </div>
+
+    <!-- CONTROLES -->
+    <div class="controls">
+        <button class="btn-nav" onclick="event.stopPropagation(); prev()" title="Anterior (Flecha Izquierda)">
+            ⬅️ Anterior
+        </button>
+        <button class="btn-main" onclick="event.stopPropagation(); shuffle()" title="Mezclar orden (S)">
+            🔀 Mezclar
+        </button>
+        <button class="btn-nav" onclick="event.stopPropagation(); next()" title="Siguiente (Flecha Derecha)">
+            Siguiente ➡️
+        </button>
+    </div>
+
+    <div class="shortcuts">
+        <span><span class="kbd">Espacio</span> Girar</span>
+        <span><span class="kbd">←</span> <span class="kbd">→</span> Navegar</span>
+        <span><span class="kbd">S</span> Mezclar</span>
+    </div>
+</div>
+
+<script>
+// BASE DE DATOS COMPLETA DE 100 MÚSCULOS CON IMÁGENES VERIFICADAS HTTP 200
+const allMuscles = [
+  {
+    "id": 1,
+    "es": "Pectoral mayor",
+    "en": "Pectoralis major",
+    "cat": "PECHO",
+    "loc": "Parte del FRENTE, en la zona alta del pecho. Va desde el centro del pecho (esternón y clavícula) hasta la parte exterior del brazo.",
+    "use": "Empujar cosas hacia el frente. Muy activo en flexiones de pecho (lagartijas), press de banca con barra y al dar un abrazo fuerte.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/d/de/Gray410.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/d/de/Gray410.png%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Pecho y Tórax"
+  },
+  {
+    "id": 2,
+    "es": "Pectoral menor",
+    "en": "Pectoralis minor",
+    "cat": "PECHO",
+    "loc": "Parte del FRENTE, en el pecho, pero escondido por debajo del pectoral mayor (capa profunda), en las costillas superiores.",
+    "use": "Bajar los hombros hacia adelante y abajo. Trabaja en fondos en paralelas y al empujar objetos pesados hacia el piso.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/9/97/Pectoralis_minor.svg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/9/97/Pectoralis_minor.svg%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Pecho y Tórax"
+  },
+  {
+    "id": 3,
+    "es": "Dorsal ancho",
+    "en": "Latissimus dorsi",
+    "cat": "ESPALDA",
+    "loc": "Parte de ATRÁS del cuerpo, en los costados de la espalda media y baja. Es el músculo ancho que le da la forma de 'V' a la espalda.",
+    "use": "Tirar y jalar cosas hacia el cuerpo. Clave al hacer dominadas en barra, remos para espalda y al nadar estilo crol.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/8/87/Latissimus.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/8/87/Latissimus.jpg%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Espalda y Cuello"
+  },
+  {
+    "id": 4,
+    "es": "Trapecio",
+    "en": "Trapezius",
+    "cat": "ESPALDA / CUELLO",
+    "loc": "Parte de ATRÁS, abarca desde la nuca y el cuello hasta la parte alta y media de la espalda, extendiéndose hacia ambos hombros.",
+    "use": "Subir los hombros hacia las orejas y juntar las paletillas. Se usa en encogimientos con mancuernas y al cargar bolsas pesadas.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/6/60/Trapezius.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/6/60/Trapezius.png%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Espalda y Cuello"
+  },
+  {
+    "id": 5,
+    "es": "Deltoides",
+    "en": "Deltoid",
+    "cat": "HOMBROS",
+    "loc": "En el HOMBRO, cubre la parte alta, el frente, el lateral (exterior) y la parte de atrás del hombro como una hombrera protectora.",
+    "use": "Levantar los brazos hacia el frente, hacia los lados y hacia atrás. Trabaja en press militar sobre la cabeza y elevaciones laterales.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/9/93/Deltoideus.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/9/93/Deltoideus.png%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Hombros y Escápula"
+  },
+  {
+    "id": 6,
+    "es": "Bíceps braquial",
+    "en": "Biceps brachii",
+    "cat": "BRAZOS",
+    "loc": "Parte del FRENTE del brazo (entre el hombro y el codo). Es el clásico músculo que resalta al 'hacer fuerza' doblando el brazo.",
+    "use": "Doblar el codo y girar la palma hacia arriba. Se activa en curls con mancuernas, dominadas y al cargar paquetes o niños en brazos.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/3/36/1120_Muscles_that_Move_the_Forearm_Humerus_Flex_Sin.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/3/36/1120_Muscles_that_Move_the_Forearm_Humerus_Flex_Sin.png%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Brazos y Manos"
+  },
+  {
+    "id": 7,
+    "es": "Tríceps braquial",
+    "en": "Triceps brachii",
+    "cat": "BRAZOS",
+    "loc": "Parte de ATRÁS del brazo (desde el hombro hasta el codo). Ocupa más de la mitad del volumen total del brazo.",
+    "use": "Estirar o empujar con el codo recto. Trabaja al empujar puertas pesadas, en fondos de brazos, extensiones en polea y press cerrado.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/8/83/Triceps_brachii.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/8/83/Triceps_brachii.png%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Brazos y Manos"
+  },
+  {
+    "id": 8,
+    "es": "Braquial",
+    "en": "Brachialis",
+    "cat": "BRAZOS",
+    "loc": "Parte del FRENTE del brazo, en la zona baja cerca del codo, ubicado justo por debajo del bíceps.",
+    "use": "Doblar el codo con gran potencia en cualquier posición. Clave al hacer dominadas con agarre prono y curl martillo con mancuernas.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/2/2e/MusclesAnt%C3%A9rieuresDuBras.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/2/2e/MusclesAnt%25C3%25A9rieuresDuBras.jpg%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Brazos y Manos"
+  },
+  {
+    "id": 9,
+    "es": "Braquiorradial",
+    "en": "Brachioradialis",
+    "cat": "ANTEBRAZO",
+    "loc": "En el ANTEBRAZO, en la parte superior y lateral (exterior), en el mismo lado del dedo pulgar.",
+    "use": "Doblar el codo cuando la palma mira hacia adentro (agarre neutro). Trabaja al martillar, jugar tenis y en curl martillo.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/0/0f/Gray417_color.PNG?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/0/0f/Gray417_color.PNG%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Brazos y Manos"
+  },
+  {
+    "id": 10,
+    "es": "Coracobraquial",
+    "en": "Coracobrachialis",
+    "cat": "BRAZOS",
+    "loc": "Parte del FRENTE e INTERIOR del brazo, en la zona alta cerca de la axila.",
+    "use": "Llevar el brazo hacia adelante y pegarlo al pecho. Se usa al lanzar una pelota y en movimientos de gancho en boxeo.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/8/84/Coracobrachialis_muscle05.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/8/84/Coracobrachialis_muscle05.png%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Brazos y Manos"
+  },
+  {
+    "id": 11,
+    "es": "Supraespinoso",
+    "en": "Supraspinatus",
+    "cat": "MANGUITO ROTADOR",
+    "loc": "Parte de ATRÁS, en la zona más alta del omóplato (arriba de la paletilla), por debajo del trapecio.",
+    "use": "Iniciar el despegue del brazo hacia el lado (los primeros centímetros). Vital para la estabilidad del hombro y en saques de tenis.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/3/34/Supraspinatus_muscle_back4.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/3/34/Supraspinatus_muscle_back4.png%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Hombros y Escápula"
+  },
+  {
+    "id": 12,
+    "es": "Infraespinoso",
+    "en": "Infraspinatus",
+    "cat": "MANGUITO ROTADOR",
+    "loc": "Parte de ATRÁS del hombro, sobre la paletilla (omóplato), justo debajo de su borde óseo medio.",
+    "use": "Girar el brazo hacia afuera (hacia atrás). Esencial para proteger el hombro al lanzar balones o pelotas de béisbol.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/d/d5/Infraspinatus.PNG?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/d/d5/Infraspinatus.PNG%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Hombros y Escápula"
+  },
+  {
+    "id": 13,
+    "es": "Subescapular",
+    "en": "Subscapularis",
+    "cat": "MANGUITO ROTADOR",
+    "loc": "Parte INTERIOR del omóplato (por la cara oculta que da hacia las costillas, inaccesible al tacto directo).",
+    "use": "Girar el brazo hacia adentro. Trabaja en remates de voleibol, golpes de derecha en tenis y brazadas de natación.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/6/61/Subscapularis_muscle_frontal.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/6/61/Subscapularis_muscle_frontal.png%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Hombros y Escápula"
+  },
+  {
+    "id": 14,
+    "es": "Redondo mayor",
+    "en": "Teres major",
+    "cat": "ESPALDA / HOMBRO",
+    "loc": "Parte de ATRÁS, en la esquina inferior de la paletilla (cerca de la axila por detrás), debajo del redondo menor.",
+    "use": "Tirar del brazo hacia abajo y hacia atrás. Ayuda al dorsal ancho en dominadas y remos con mancuerna.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/d/d5/Teres_major.PNG?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/d/d5/Teres_major.PNG%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Espalda y Cuello"
+  },
+  {
+    "id": 15,
+    "es": "Redondo menor",
+    "en": "Teres minor",
+    "cat": "MANGUITO ROTADOR",
+    "loc": "Parte de ATRÁS del hombro, en el borde exterior de la paletilla, justo arriba del redondo mayor.",
+    "use": "Girar el brazo hacia afuera y estabilizar el hombro. Actúa al frenar el brazo después de lanzar algo con fuerza.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/d/d9/Teres_minor_muscle_back3.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/d/d9/Teres_minor_muscle_back3.png%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Hombros y Escápula"
+  },
+  {
+    "id": 16,
+    "es": "Serrato anterior",
+    "en": "Serratus anterior",
+    "cat": "TORSO / ESCÁPULA",
+    "loc": "A los COSTADOS del tórax (debajo de la axila sobre las costillas), parece una hilera de 'dientes de sierra'.",
+    "use": "Llevar el hombro hacia adelante. Llamado 'el músculo del boxeador', trabaja al dar golpes rectos y en flexiones de pecho.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/8/8d/SerratusMagnus.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/8/8d/SerratusMagnus.jpg%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Hombros y Escápula"
+  },
+  {
+    "id": 17,
+    "es": "Romboides mayor",
+    "en": "Rhomboid major",
+    "cat": "ESPALDA ALTA",
+    "loc": "Parte de ATRÁS, en la espalda alta, en el espacio entre la columna y el borde interno de la paletilla.",
+    "use": "Juntar las paletillas hacia el centro de la espalda (sacar pecho). Se activa en remos con barra y polea sentada.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/4/42/Rhomboideus_major.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/4/42/Rhomboideus_major.png%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Espalda y Cuello"
+  },
+  {
+    "id": 18,
+    "es": "Romboides menor",
+    "en": "Rhomboid minor",
+    "cat": "ESPALDA ALTA",
+    "loc": "Parte de ATRÁS, en la espalda alta, justo encima del romboides mayor (más cerca de la base del cuello).",
+    "use": "Juntar y elevar ligeramente las paletillas. Trabaja al hacer remo sentado y mantener una postura erguida.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/7/7c/Rhomboideus_minor.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/7/7c/Rhomboideus_minor.png%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Espalda y Cuello"
+  },
+  {
+    "id": 19,
+    "es": "Elevador de la escápula",
+    "en": "Levator scapulae",
+    "cat": "CUELLO / ESPALDA",
+    "loc": "A los LADOS del cuello y parte alta de la espalda; une los huesos del cuello con la punta superior de la paletilla.",
+    "use": "Subir los hombros hacia arriba y girar el cuello. Se tensa al cargar bolsos al hombro o encogerse de hombros.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/b/bc/Levator_scapulae.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/b/bc/Levator_scapulae.png%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Espalda y Cuello"
+  },
+  {
+    "id": 20,
+    "es": "Recto del abdomen",
+    "en": "Rectus abdominis",
+    "cat": "CORE / ABDOMEN",
+    "loc": "Parte del FRENTE del vientre, desde las costillas bajas hasta el pubis. Es la famosa 'tableta de chocolate' o 'six-pack'.",
+    "use": "Doblar el tronco hacia adelante. Clave en los abdominales tradicionales (crunches) y al enrollar el cuerpo.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/9/95/Rectus_abdominis.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/9/95/Rectus_abdominis.png%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Core y Abdomen"
+  },
+  {
+    "id": 21,
+    "es": "Transverso del abdomen",
+    "en": "Transverse abdominal",
+    "cat": "CORE / ABDOMEN",
+    "loc": "Parte PROFUNDA del abdomen, envuelve toda la cintura como si fuera una faja natural por debajo de los otros músculos.",
+    "use": "Meter el ombligo hacia adentro y proteger la columna. Trabaja en planchas estáticas y al aguantar la respiración con fuerza.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/3/32/Illu_trunk_muscles.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/3/32/Illu_trunk_muscles.jpg%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Core y Abdomen"
+  },
+  {
+    "id": 22,
+    "es": "Oblicuo externo del abdomen",
+    "en": "External oblique",
+    "cat": "CORE / ABDOMEN",
+    "loc": "A los COSTADOS del abdomen (parte lateral y del frente), con fibras que bajan en diagonal hacia el centro.",
+    "use": "Girar el tronco a los lados y doblar la cintura. Se usa en giros rusos, leñadores con polea y lanzamientos de disco.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/3/32/Illu_trunk_muscles.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/3/32/Illu_trunk_muscles.jpg%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Core y Abdomen"
+  },
+  {
+    "id": 23,
+    "es": "Oblicuo interno del abdomen",
+    "en": "Internal oblique",
+    "cat": "CORE / ABDOMEN",
+    "loc": "A los COSTADOS del abdomen, justo debajo del oblicuo externo, con fibras que suben en diagonal.",
+    "use": "Girar y flexionar la cintura hacia el mismo lado. Clave en planchas laterales y para mantener el equilibrio del torso.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/2/2a/Gray395.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/2/2a/Gray395.png%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Core y Abdomen"
+  },
+  {
+    "id": 24,
+    "es": "Cuadrado lumbar",
+    "en": "Quadratus lumborum",
+    "cat": "ESPALDA BAJA / CORE",
+    "loc": "Parte de ATRÁS, en la espalda baja (zona lumbar), entre la última costilla y la parte alta de la cadera.",
+    "use": "Inclinarse hacia un lado y mantener la espalda derecha. Se activa al cargar una sola bolsa pesada de un lado (paseo del granjero).",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/8/8d/Quadratuslumborum.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/8/8d/Quadratuslumborum.png%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Espalda y Cuello"
+  },
+  {
+    "id": 25,
+    "es": "Erector de la columna",
+    "en": "Erector spinae",
+    "cat": "ESPALDA BAJA",
+    "loc": "Parte de ATRÁS, son dos columnas musculares gruesas que recorren toda la espalda a ambos lados de la columna vertebral.",
+    "use": "Poner la espalda derecha y arquearse hacia atrás. Esencial en peso muerto, sentadillas y para no encorvarse.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/1/1a/Gray389_-_Erector_spinae.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/1/1a/Gray389_-_Erector_spinae.png%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Espalda y Cuello"
+  },
+  {
+    "id": 26,
+    "es": "Multífido",
+    "en": "Multifidus",
+    "cat": "ESPALDA / COLUMNA",
+    "loc": "Parte de ATRÁS, muy profundo, pegado vértebra por vértebra a lo largo de toda la columna (especialmente en la zona lumbar).",
+    "use": "Estabilizar la columna vertebral en cada movimiento. Trabaja en el ejercicio de perro-pájaro (bird-dog) y al levantar pesos del suelo.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/4/4f/Multifidi.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/4/4f/Multifidi.png%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Espalda y Cuello"
+  },
+  {
+    "id": 27,
+    "es": "Iliocostal",
+    "en": "Iliocostalis",
+    "cat": "ESPALDA / COLUMNA",
+    "loc": "Parte de ATRÁS, es la columna más externa de los músculos de la espalda; sube por las costillas en la espalda media y baja.",
+    "use": "Extender la columna y doblarse hacia un lado. Se activa en extensiones de espalda en banco (hiperextensiones).",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/0/08/Iliostalis.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/0/08/Iliostalis.png%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Espalda y Cuello"
+  },
+  {
+    "id": 28,
+    "es": "Longísimo",
+    "en": "Longissimus",
+    "cat": "ESPALDA / COLUMNA",
+    "loc": "Parte de ATRÁS, es la columna del medio de la espalda; sube pegada a la columna desde la pelvis hasta la base de la cabeza.",
+    "use": "Mantener el cuerpo erguido al estar de pie o levantar peso del suelo en sentadillas y peso muerto.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/1/1f/Longissimus.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/1/1f/Longissimus.png%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Espalda y Cuello"
+  },
+  {
+    "id": 29,
+    "es": "Espinoso",
+    "en": "Spinalis",
+    "cat": "ESPALDA / COLUMNA",
+    "loc": "Parte de ATRÁS, es la columna muscular más interna, pegada exactamente al centro de las vértebras en la espalda alta.",
+    "use": "Estirar y enderezar la columna dorsal y el cuello hacia atrás en ejercicios posturales.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/a/a4/Spinalis.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/a/a4/Spinalis.png%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Espalda y Cuello"
+  },
+  {
+    "id": 30,
+    "es": "Diafragma",
+    "en": "Thoracic diaphragm",
+    "cat": "TÓRAX / RESPIRACIÓN",
+    "loc": "Por DENTRO del cuerpo, en la base del pecho; tiene forma de cúpula y separa los pulmones del estómago.",
+    "use": "Es el músculo principal para respirar: baja al inhalar aire profundo y ayuda a apretar el abdomen al levantar cargas máximas.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/8/8b/Respiratory_system.svg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/8/8b/Respiratory_system.svg%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Pecho y Tórax"
+  },
+  {
+    "id": 31,
+    "es": "Intercostales externos",
+    "en": "External intercostals",
+    "cat": "TÓRAX / RESPIRACIÓN",
+    "loc": "Entre las costillas, en la capa más exterior de los costados del pecho.",
+    "use": "Abrir y subir las costillas para que entre mucho aire cuando corres o haces ejercicio intenso.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/d/d3/External_intercostal_muscles_back.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/d/d3/External_intercostal_muscles_back.png%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Pecho y Tórax"
+  },
+  {
+    "id": 32,
+    "es": "Intercostales internos",
+    "en": "Internal intercostals",
+    "cat": "TÓRAX / RESPIRACIÓN",
+    "loc": "Entre las costillas, en la capa profunda por debajo de los intercostales externos.",
+    "use": "Apretar las costillas para botar el aire con fuerza, como al soplar fuerte, toser o gritar.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/7/79/Internal_intercostal_muscles_back.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/7/79/Internal_intercostal_muscles_back.png%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Pecho y Tórax"
+  },
+  {
+    "id": 33,
+    "es": "Esternocleidomastoideo",
+    "en": "Sternocleidomastoid",
+    "cat": "CUELLO",
+    "loc": "A los LADOS y FRENTE del cuello; forma dos cordones muy visibles desde detrás de la oreja hasta el esternón y la clavícula.",
+    "use": "Girar la cabeza hacia los lados y bajar la barbilla al pecho. Activo en deportes de contacto como boxeo y lucha.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/1/1a/Sternocleidomastoideus.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/1/1a/Sternocleidomastoideus.png%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Espalda y Cuello"
+  },
+  {
+    "id": 34,
+    "es": "Esplenio de la cabeza",
+    "en": "Splenius capitis",
+    "cat": "CUELLO",
+    "loc": "Parte de ATRÁS del cuello y base del cráneo, por debajo del trapecio.",
+    "use": "Echar la cabeza hacia atrás (mirar hacia arriba) y girar la cabeza hacia el lado.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/5/5f/Musculus_splenius_capitis_marked.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/5/5f/Musculus_splenius_capitis_marked.png%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Espalda y Cuello"
+  },
+  {
+    "id": 35,
+    "es": "Esplenio del cuello",
+    "en": "Splenius cervicis",
+    "cat": "CUELLO",
+    "loc": "Parte de ATRÁS del cuello, un poco más abajo y hacia afuera que el esplenio de la cabeza.",
+    "use": "Enderezar y girar el cuello hacia los lados; ayuda a mantener la vista al frente al montar en bicicleta de ruta.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/f/f4/DeepNapeMuscles.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/f/f4/DeepNapeMuscles.jpg%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Espalda y Cuello"
+  },
+  {
+    "id": 36,
+    "es": "Escaleno anterior",
+    "en": "Anterior scalene",
+    "cat": "CUELLO",
+    "loc": "Parte LATERAL y ligeramente al FRENTE del cuello, va desde los huesos del cuello hasta la primera costilla.",
+    "use": "Inclinar el cuello hacia el hombro y ayudar a respirar profundo cuando estás agitado.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/6/6e/Scalenus.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/6/6e/Scalenus.png%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Espalda y Cuello"
+  },
+  {
+    "id": 37,
+    "es": "Escaleno medio",
+    "en": "Middle scalene",
+    "cat": "CUELLO",
+    "loc": "A los LADOS del cuello, en el medio de los tres escalenos, entre el cuello y la primera costilla.",
+    "use": "Doblar el cuello hacia el lado del hombro y dar firmeza a la cabeza al cargar pesos.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/f/fa/Scalenus_medius.png?utm_source=es.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/f/fa/Scalenus_medius.png%3Futm_source%3Des.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Espalda y Cuello"
+  },
+  {
+    "id": 38,
+    "es": "Escaleno posterior",
+    "en": "Posterior scalene",
+    "cat": "CUELLO",
+    "loc": "Parte LATERAL y ligeramente hacia ATRÁS del cuello, baja hasta la segunda costilla.",
+    "use": "Inclinar el cuello de lado y elevar la segunda costilla al tomar aire con esfuerzo.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/6/6e/Scalenus.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/6/6e/Scalenus.png%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Espalda y Cuello"
+  },
+  {
+    "id": 39,
+    "es": "Pronador redondo",
+    "en": "Pronator teres",
+    "cat": "ANTEBRAZO",
+    "loc": "Parte del FRENTE del antebrazo, cerca del codo por el lado interior, cruza en diagonal hacia afuera.",
+    "use": "Girar la mano para que la palma mire hacia el suelo (pronación); clave al jugar tenis, bádminton y en pulsos.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/6/69/Gerrish%27s_Text-book_of_Anatomy_%281902%29_-_Fig._313.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/6/69/Gerrish%2527s_Text-book_of_Anatomy_%25281902%2529_-_Fig._313.png%3Futm_source%3Dcommons.wikimedia.org%26utm_campaign%3Dimageinfo%26utm_content%3Doriginal&w=500",
+    "region": "Brazos y Manos"
+  },
+  {
+    "id": 40,
+    "es": "Pronador cuadrado",
+    "en": "Pronator quadratus",
+    "cat": "ANTEBRAZO",
+    "loc": "Parte del FRENTE del antebrazo, muy abajo, pegado a la muñeca (músculo cuadrado y profundo).",
+    "use": "Girar la muñeca hacia adentro, como al usar un destornillador o girar el volante.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/1/18/PronatorQuadratus%26SurroundingAnatomy.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/1/18/PronatorQuadratus%2526SurroundingAnatomy.jpg%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Brazos y Manos"
+  },
+  {
+    "id": 41,
+    "es": "Supinador",
+    "en": "Supinator",
+    "cat": "ANTEBRAZO",
+    "loc": "Parte de ATRÁS y EXTERIOR del codo y antebrazo, en una capa profunda.",
+    "use": "Girar la mano para que la palma mire hacia arriba (supinación); se usa al girar una llave en la cerradura o en curl con giro.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/6/6c/CroquisSupinadorCorto.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/6/6c/CroquisSupinadorCorto.jpg%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Brazos y Manos"
+  },
+  {
+    "id": 42,
+    "es": "Flexor radial del carpo",
+    "en": "Flexor carpi radialis",
+    "cat": "ANTEBRAZO",
+    "loc": "Parte del FRENTE del antebrazo, en la zona media hacia el lado del dedo pulgar.",
+    "use": "Doblar la muñeca hacia adelante y hacia el pulgar. Se usa en curls de muñeca con barra y al agarrar palos de golf.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/0/06/Gray1231.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/0/06/Gray1231.png%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Brazos y Manos"
+  },
+  {
+    "id": 43,
+    "es": "Flexor ulnar del carpo",
+    "en": "Flexor carpi ulnaris",
+    "cat": "ANTEBRAZO",
+    "loc": "Parte del FRENTE e INTERIOR del antebrazo, en el borde del lado del dedo meñique.",
+    "use": "Doblar la muñeca hacia adelante y hacia el meñique. Importante en lanzamientos de béisbol y golpes de karate.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/7/75/Flexor_carpi_ulnaris.png?utm_source=es.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/7/75/Flexor_carpi_ulnaris.png%3Futm_source%3Des.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Brazos y Manos"
+  },
+  {
+    "id": 44,
+    "es": "Palmar largo",
+    "en": "Palmaris longus",
+    "cat": "ANTEBRAZO",
+    "loc": "Parte del FRENTE del antebrazo, en el centro; su tendón se nota fácilmente en medio de la muñeca al juntar el pulgar y el meñique.",
+    "use": "Ayuda a doblar la muñeca y tensar la piel de la palma para un mejor agarre al trepar o agarrar barras.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/4/4c/Palmaris_longus_tendon2.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/4/4c/Palmaris_longus_tendon2.jpg%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Brazos y Manos"
+  },
+  {
+    "id": 45,
+    "es": "Flexor superficial de los dedos",
+    "en": "Flexor digitorum superficialis",
+    "cat": "ANTEBRAZO",
+    "loc": "Parte del FRENTE del antebrazo, ocupa gran parte de la zona media y manda tendones a los 4 dedos (del índice al meñique).",
+    "use": "Doblar los dedos para cerrar la mano con fuerza. Fundamental para colgarse de la barra de dominadas y sostener pesas.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/5/53/Gray421.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/5/53/Gray421.png%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Brazos y Manos"
+  },
+  {
+    "id": 46,
+    "es": "Flexor profundo de los dedos",
+    "en": "Flexor digitorum profundus",
+    "cat": "ANTEBRAZO",
+    "loc": "Parte del FRENTE del antebrazo, por debajo del flexor superficial, llega hasta las puntas de los dedos.",
+    "use": "Apretar la punta de los dedos con fuerza máxima; esencial en escalada de roca y agarres de judo.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/c/cb/MusculaturaProdundaDelAntebrazo.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/c/cb/MusculaturaProdundaDelAntebrazo.jpg%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Brazos y Manos"
+  },
+  {
+    "id": 47,
+    "es": "Flexor largo del pulgar",
+    "en": "Flexor pollicis longus",
+    "cat": "ANTEBRAZO",
+    "loc": "Parte del FRENTE del antebrazo, en el lado del pulgar (por debajo de otros músculos), va directo a la punta del dedo pulgar.",
+    "use": "Doblar la punta del pulgar para hacer pinza fuerte y para el agarre de gancho en levantamiento de pesas.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/c/cb/MusculaturaProdundaDelAntebrazo.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/c/cb/MusculaturaProdundaDelAntebrazo.jpg%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Brazos y Manos"
+  },
+  {
+    "id": 48,
+    "es": "Extensor radial largo del carpo",
+    "en": "Extensor carpi radialis longus",
+    "cat": "ANTEBRAZO",
+    "loc": "Parte de ATRÁS y EXTERIOR del antebrazo, arriba cerca del codo, del lado del dedo pulgar.",
+    "use": "Tirar de la muñeca hacia atrás (hacia el dorso). Clave para que la muñeca no venza hacia adelante en press de banca.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/f/f0/Carpal-Tunnel.svg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/f/f0/Carpal-Tunnel.svg%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Brazos y Manos"
+  },
+  {
+    "id": 49,
+    "es": "Extensor radial corto del carpo",
+    "en": "Extensor carpi radialis brevis",
+    "cat": "ANTEBRAZO",
+    "loc": "Parte de ATRÁS del antebrazo, justo al lado del extensor largo, un poco más abajo.",
+    "use": "Mantener la muñeca firme y extendida al golpear con raqueta de tenis (su sobrecarga causa el 'codo de tenista').",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/2/22/ECR-brevis.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/2/22/ECR-brevis.png%3Futm_source%3Dcommons.wikimedia.org%26utm_campaign%3Dimageinfo%26utm_content%3Doriginal&w=500",
+    "region": "Brazos y Manos"
+  },
+  {
+    "id": 50,
+    "es": "Extensor ulnar del carpo",
+    "en": "Extensor carpi ulnaris",
+    "cat": "ANTEBRAZO",
+    "loc": "Parte de ATRÁS e INTERIOR del antebrazo, en el borde que va hacia el dedo meñique.",
+    "use": "Llevar la muñeca hacia atrás y hacia el meñique. Se usa en el swing de golf y bateo de béisbol.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/1/1c/SuperficialMuscularLayerOfPosteriorForearm%26Hand.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/1/1c/SuperficialMuscularLayerOfPosteriorForearm%2526Hand.jpg%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Brazos y Manos"
+  },
+  {
+    "id": 51,
+    "es": "Extensor de los dedos",
+    "en": "Extensor digitorum",
+    "cat": "ANTEBRAZO",
+    "loc": "Parte de ATRÁS del antebrazo, en el centro; se divide en cuatro tendones visibles en el dorso de la mano.",
+    "use": "Abrir la mano y estirar los dedos hacia atrás. Compensa el esfuerzo de apretar barras y evita calambres.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/f/f0/Carpal-Tunnel.svg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/f/f0/Carpal-Tunnel.svg%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Brazos y Manos"
+  },
+  {
+    "id": 52,
+    "es": "Extensor del meñique",
+    "en": "Extensor digiti minimi",
+    "cat": "ANTEBRAZO",
+    "loc": "Parte de ATRÁS del antebrazo, al lado del extensor común, directo hacia el dedo meñique.",
+    "use": "Estirar el dedo meñique de manera independiente, como al tocar el piano o sujetar objetos delicados.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/a/ac/ForearmMusculature.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/a/ac/ForearmMusculature.png%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Brazos y Manos"
+  },
+  {
+    "id": 53,
+    "es": "Ancóneo",
+    "en": "Anconeus",
+    "cat": "BRAZOS / ANTEBRAZO",
+    "loc": "Parte de ATRÁS del codo, un pequeño músculo triangular justo en la punta exterior del codo.",
+    "use": "Ayuda al tríceps a estirar el codo por completo y bloquea la articulación al terminar un press de pecho.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/7/77/Gray1232.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/7/77/Gray1232.png%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Brazos y Manos"
+  },
+  {
+    "id": 54,
+    "es": "Glúteo mayor",
+    "en": "Gluteus maximus",
+    "cat": "GLÚTEOS / CADERA",
+    "loc": "Parte de ATRÁS, en la nalga. Es el músculo más grande, voluminoso y visible de los glúteos.",
+    "use": "Empujar la pierna hacia atrás con fuerza; es el motor principal para levantarse de sentadillas, subir gradas, correr y saltar.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/7/7b/Gluteus_maximus_3D.gif?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/7/7b/Gluteus_maximus_3D.gif%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Glúteos y Cadera"
+  },
+  {
+    "id": 55,
+    "es": "Glúteo medio",
+    "en": "Gluteus medius",
+    "cat": "GLÚTEOS / CADERA",
+    "loc": "En el LATERAL (costado) de la cadera, en la parte alta de la nalga.",
+    "use": "Abrir la pierna hacia el lado y evitar que la cadera se caiga al estar parado en un solo pie. Vital en zancadas y sentadillas.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/2/29/Gluteus_medius_muscle08.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/2/29/Gluteus_medius_muscle08.png%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Glúteos y Cadera"
+  },
+  {
+    "id": 56,
+    "es": "Glúteo menor",
+    "en": "Gluteus minimus",
+    "cat": "GLÚTEOS / CADERA",
+    "loc": "En el LATERAL de la cadera, profundo por debajo del glúteo medio.",
+    "use": "Ayuda a abrir la pierna hacia el lado y girarla hacia adentro; estabiliza la pelvis al caminar o trotar.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/c/cf/Gluteus_minimus_muscle07.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/c/cf/Gluteus_minimus_muscle07.png%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Glúteos y Cadera"
+  },
+  {
+    "id": 57,
+    "es": "Tensor de la fascia lata",
+    "en": "Tensor fasciae latae",
+    "cat": "CADERA / MUSLO",
+    "loc": "En la parte ALTA y EXTERIOR del muslo (costado de la cadera), conectado a una banda fibrosa larga que baja por la pierna.",
+    "use": "Subir y separar la pierna hacia afuera; se activa al correr, patear balones y saltar vallas.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/a/aa/Gray430_with_TensorFasciaLata-en.svg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/a/aa/Gray430_with_TensorFasciaLata-en.svg%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Glúteos y Cadera"
+  },
+  {
+    "id": 58,
+    "es": "Ilíaco",
+    "en": "Iliacus",
+    "cat": "CADERA / CORE",
+    "loc": "Parte del FRENTE e INTERIOR de la pelvis, tapizando el hueso de la cadera por dentro.",
+    "use": "Subir la rodilla hacia el pecho con gran potencia. Clave en carreras de velocidad y abdominales con piernas.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/e/e2/Anterior_Hip_Muscles_2.PNG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/e/e2/Anterior_Hip_Muscles_2.PNG%3Futm_source%3Dcommons.wikimedia.org%26utm_campaign%3Dimageinfo%26utm_content%3Doriginal&w=500",
+    "region": "Core y Abdomen"
+  },
+  {
+    "id": 59,
+    "es": "Psoas mayor",
+    "en": "Psoas major",
+    "cat": "CADERA / CORE",
+    "loc": "Por DENTRO del cuerpo, va desde la espalda baja (columna lumbar), cruza por delante de la pelvis y llega al fémur.",
+    "use": "Levantar la pierna hacia arriba (flexionar la cadera); esencial para correr rápido, patear en artes marciales y subir escaleras.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/b/b5/Psoas_major_muscle11.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/b/b5/Psoas_major_muscle11.png%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Core y Abdomen"
+  },
+  {
+    "id": 60,
+    "es": "Piriforme",
+    "en": "Piriformis",
+    "cat": "CADERA / ROTADORES",
+    "loc": "Parte de ATRÁS, en el centro profundo de la nalga (por debajo del glúteo mayor).",
+    "use": "Girar el muslo hacia afuera con la pierna recta y hacia afuera al sentarse. Clave en cambios de dirección rápidos en fútbol.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/8/84/Piriformis.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/8/84/Piriformis.jpg%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Glúteos y Cadera"
+  },
+  {
+    "id": 61,
+    "es": "Obturador interno",
+    "en": "Obturator internus",
+    "cat": "CADERA / ROTADORES",
+    "loc": "Parte de ATRÁS y PROFUNDA de la pelvis, detrás de la articulación de la cadera.",
+    "use": "Girar la pierna hacia afuera y mantener la cabeza del fémur encajada en su sitio durante sentadillas pesadas.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/5/55/Posterior_Hip_Muscles_1.PNG?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/5/55/Posterior_Hip_Muscles_1.PNG%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Glúteos y Cadera"
+  },
+  {
+    "id": 62,
+    "es": "Obturador externo",
+    "en": "Obturator externus",
+    "cat": "CADERA / ROTADORES",
+    "loc": "Parte del FRENTE y PROFUNDA de la base de la pelvis, cerca de la ingle por detrás de los aductores.",
+    "use": "Girar la pierna hacia afuera y estabilizar la cadera al apoyarse sobre un solo pie.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/5/55/Posterior_Hip_Muscles_1.PNG?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/5/55/Posterior_Hip_Muscles_1.PNG%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Glúteos y Cadera"
+  },
+  {
+    "id": 63,
+    "es": "Gemelo superior",
+    "en": "Superior gemellus",
+    "cat": "CADERA / ROTADORES",
+    "loc": "Parte de ATRÁS y PROFUNDA de la nalga, un pequeño músculo alargado justo arriba del obturador interno.",
+    "use": "Ayuda en la rotación de la cadera hacia afuera para dar agilidad en giros sobre una pierna.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/5/55/Posterior_Hip_Muscles_1.PNG?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/5/55/Posterior_Hip_Muscles_1.PNG%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Glúteos y Cadera"
+  },
+  {
+    "id": 64,
+    "es": "Gemelo inferior",
+    "en": "Inferior gemellus",
+    "cat": "CADERA / ROTADORES",
+    "loc": "Parte de ATRÁS y PROFUNDA de la nalga, justo por debajo del obturador interno.",
+    "use": "Girar la cadera hacia afuera y absorber impactos al aterrizar de saltos o frenadas bruscas.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/5/55/Posterior_Hip_Muscles_1.PNG?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/5/55/Posterior_Hip_Muscles_1.PNG%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Glúteos y Cadera"
+  },
+  {
+    "id": 65,
+    "es": "Cuadrado femoral",
+    "en": "Quadratus femoris",
+    "cat": "CADERA / ROTADORES",
+    "loc": "Parte de ATRÁS de la cadera, una banda rectangular profunda ubicada justo debajo de los gemelos de la cadera.",
+    "use": "Girar el muslo hacia afuera y llevarlo hacia el centro; se usa al patear en karate y al nadar estilo pecho.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/5/55/Posterior_Hip_Muscles_1.PNG?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/5/55/Posterior_Hip_Muscles_1.PNG%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Glúteos y Cadera"
+  },
+  {
+    "id": 66,
+    "es": "Sartorio",
+    "en": "Sartorius",
+    "cat": "MUSLO",
+    "loc": "Parte del FRENTE del muslo; es una cinta larga y delgada que cruza en diagonal desde la cadera exterior hasta la parte interna de la rodilla.",
+    "use": "Cruzar las piernas en el suelo ('posición de sastre'), doblar la rodilla y patear con el borde interno del pie.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/a/af/Sartorius.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/a/af/Sartorius.png%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Muslo (Cuádriceps/Isquios/Aductores)"
+  },
+  {
+    "id": 67,
+    "es": "Recto femoral",
+    "en": "Rectus femoris",
+    "cat": "CUÁDRICEPS",
+    "loc": "Parte del FRENTE del muslo, justo en el centro del cuádriceps, desde la cadera hasta la rótula.",
+    "use": "Estirar la rodilla y a la vez subir la pierna hacia el pecho. Clave al patear un balón de fútbol con fuerza y en zancadas.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/1/14/Rectus_femoris.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/1/14/Rectus_femoris.png%3Futm_source%3Dcommons.wikimedia.org%26utm_campaign%3Dimageinfo%26utm_content%3Doriginal&w=500",
+    "region": "Muslo (Cuádriceps/Isquios/Aductores)"
+  },
+  {
+    "id": 68,
+    "es": "Vasto lateral",
+    "en": "Vastus lateralis",
+    "cat": "CUÁDRICEPS",
+    "loc": "Parte EXTERIOR (costado) del muslo por el frente. Es el músculo más grande del cuádriceps en la cara externa.",
+    "use": "Estirar la rodilla con fuerza máxima. Motor en sentadillas con barra, prensa inclinada y ciclismo.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/0/05/Illu_lower_extremity_muscles.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/0/05/Illu_lower_extremity_muscles.jpg%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Muslo (Cuádriceps/Isquios/Aductores)"
+  },
+  {
+    "id": 69,
+    "es": "Vasto medial",
+    "en": "Vastus medialis",
+    "cat": "CUÁDRICEPS",
+    "loc": "Parte INTERIOR del muslo por el frente, justo encima de la rodilla (tiene forma redondeada de 'gota de agua').",
+    "use": "Rematar la extensión completa de la rodilla y proteger la rótula; trabaja en sentadillas profundas y extensiones de piernas.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/0/05/Illu_lower_extremity_muscles.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/0/05/Illu_lower_extremity_muscles.jpg%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Muslo (Cuádriceps/Isquios/Aductores)"
+  },
+  {
+    "id": 70,
+    "es": "Vasto intermedio",
+    "en": "Vastus intermedius",
+    "cat": "CUÁDRICEPS",
+    "loc": "Parte del FRENTE del muslo, pero profundo: está escondido justo por debajo del recto femoral.",
+    "use": "Estirar la rodilla en sentadillas, zancadas y al subir montañas o empujar trineos de carga.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/0/05/Illu_lower_extremity_muscles.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/0/05/Illu_lower_extremity_muscles.jpg%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Muslo (Cuádriceps/Isquios/Aductores)"
+  },
+  {
+    "id": 71,
+    "es": "Bíceps femoral",
+    "en": "Biceps femoris",
+    "cat": "ISQUIOTIBIALES",
+    "loc": "Parte de ATRÁS del muslo, en el lado EXTERIOR (forma parte del grupo de los isquiotibiales).",
+    "use": "Doblar la rodilla hacia la nalga y echar la pierna hacia atrás. Clave en curl de piernas en máquina, peso muerto y sprints.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/4/44/M%C3%BAsculo_biceps_femoral.png?utm_source=es.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/4/44/M%25C3%25BAsculo_biceps_femoral.png%3Futm_source%3Des.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Muslo (Cuádriceps/Isquios/Aductores)"
+  },
+  {
+    "id": 72,
+    "es": "Semitendinoso",
+    "en": "Semitendinosus",
+    "cat": "ISQUIOTIBIALES",
+    "loc": "Parte de ATRÁS del muslo, en el lado INTERIOR (hacia la entrepierna), con un tendón largo que llega abajo de la rodilla.",
+    "use": "Doblar la rodilla y girarla hacia adentro. Muy activo al frenar en carreras rápidas y en peso muerto con piernas rectas.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/4/4d/Gray432_color.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/4/4d/Gray432_color.png%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Muslo (Cuádriceps/Isquios/Aductores)"
+  },
+  {
+    "id": 73,
+    "es": "Semimembranoso",
+    "en": "Semimembranosus",
+    "cat": "ISQUIOTIBIALES",
+    "loc": "Parte de ATRÁS del muslo, en el lado INTERIOR, ubicado justo por debajo del semitendinoso.",
+    "use": "Doblar la rodilla y empujar la cadera hacia adelante en sprints y al subir pendientes empinadas.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/2/2e/M%C3%BAsculo_semimembranoso.png?utm_source=es.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/2/2e/M%25C3%25BAsculo_semimembranoso.png%3Futm_source%3Des.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Muslo (Cuádriceps/Isquios/Aductores)"
+  },
+  {
+    "id": 74,
+    "es": "Aductor mayor",
+    "en": "Adductor magnus",
+    "cat": "ADUCTORES / MUSLO",
+    "loc": "Parte INTERIOR del muslo (entrepierna), es el más grande y posterior de los aductores.",
+    "use": "Cerrar las piernas hacia el centro y ayudar a subir de sentadillas profundas (especialmente sentadilla sumo).",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/e/e2/Anterior_Hip_Muscles_2.PNG?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/e/e2/Anterior_Hip_Muscles_2.PNG%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Muslo (Cuádriceps/Isquios/Aductores)"
+  },
+  {
+    "id": 75,
+    "es": "Aductor largo",
+    "en": "Adductor longus",
+    "cat": "ADUCTORES / MUSLO",
+    "loc": "Parte INTERIOR del muslo, en la zona media y al frente de la entrepierna.",
+    "use": "Juntar las piernas hacia el centro; se usa al dar un pase en fútbol con la cara interna del pie y en la máquina de aductores.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/e/e2/Anterior_Hip_Muscles_2.PNG?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/e/e2/Anterior_Hip_Muscles_2.PNG%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Muslo (Cuádriceps/Isquios/Aductores)"
+  },
+  {
+    "id": 76,
+    "es": "Aductor corto",
+    "en": "Adductor brevis",
+    "cat": "ADUCTORES / MUSLO",
+    "loc": "Parte INTERIOR del muslo, en la zona alta de la ingle, por detrás del adductor largo.",
+    "use": "Cerrar las piernas y estabilizar la pelvis al correr o cambiar de dirección.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/e/e2/Anterior_Hip_Muscles_2.PNG?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/e/e2/Anterior_Hip_Muscles_2.PNG%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Muslo (Cuádriceps/Isquios/Aductores)"
+  },
+  {
+    "id": 77,
+    "es": "Grácil",
+    "en": "Gracilis",
+    "cat": "ADUCTORES / MUSLO",
+    "loc": "Parte INTERIOR del muslo, es una cinta delgada y recta que baja por todo el borde interno desde la ingle hasta la rodilla.",
+    "use": "Juntar las piernas y doblar la rodilla; se activa al nadar estilo braza y en artes marciales para sujetar con las piernas.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/e/e2/Anterior_Hip_Muscles_2.PNG?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/e/e2/Anterior_Hip_Muscles_2.PNG%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Muslo (Cuádriceps/Isquios/Aductores)"
+  },
+  {
+    "id": 78,
+    "es": "Pectíneo",
+    "en": "Pectineus",
+    "cat": "ADUCTORES / CADERA",
+    "loc": "Parte del FRENTE y arriba en la ingle, entre el pubis y la parte superior del muslo.",
+    "use": "Subir el muslo y llevarlo hacia adentro al mismo tiempo; se usa al controlar un balón con el muslo en fútbol.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/e/e2/Anterior_Hip_Muscles_2.PNG?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/e/e2/Anterior_Hip_Muscles_2.PNG%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Glúteos y Cadera"
+  },
+  {
+    "id": 79,
+    "es": "Tibial anterior",
+    "en": "Tibialis anterior",
+    "cat": "PIERNA / ESPINILLA",
+    "loc": "Parte del FRENTE de la pierna, justo al lado exterior del hueso de la espinilla (la canilla).",
+    "use": "Subir la punta del pie hacia arriba (dorsiflexión). Evita que arrastres los pies al caminar o correr y absorbe impactos al trotar.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/d/d4/Tibialis.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/d/d4/Tibialis.png%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Pierna, Pantorrilla y Pie"
+  },
+  {
+    "id": 80,
+    "es": "Tibial posterior",
+    "en": "Tibialis posterior",
+    "cat": "PIERNA / PANTORRILLA",
+    "loc": "Parte de ATRÁS de la pierna, profundo por detrás de la espinilla y debajo de los gemelos.",
+    "use": "Apuntar con el pie hacia abajo y hacia adentro; es el soporte principal del arco del pie para que no se caiga (pie plano).",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/9/92/Gray442.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/9/92/Gray442.png%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Pierna, Pantorrilla y Pie"
+  },
+  {
+    "id": 81,
+    "es": "Gastrocnemio",
+    "en": "Gastrocnemius",
+    "cat": "PANTORRILLA",
+    "loc": "Parte de ATRÁS de la pierna, en la pantorrilla. Son los dos 'gemelos' voluminosos y visibles que se marcan arriba.",
+    "use": "Ponerse de puntillas con la rodilla recta; vital para saltar a la cuerda, hacer saltos verticales y sprints.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/8/8e/Gastrocnemius.png?utm_source=es.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/8/8e/Gastrocnemius.png%3Futm_source%3Des.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Pierna, Pantorrilla y Pie"
+  },
+  {
+    "id": 82,
+    "es": "Sóleo",
+    "en": "Soleus",
+    "cat": "PANTORRILLA",
+    "loc": "Parte de ATRÁS de la pierna, en la pantorrilla, ubicado justo por debajo de los gemelos y extendiéndose más abajo hacia el talón.",
+    "use": "Ponerse de puntillas cuando la rodilla está doblada (elevación de talones sentado) y aguantar de pie mucho tiempo o correr maratones.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/a/a1/SoleusAndArch.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/a/a1/SoleusAndArch.jpg%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Pierna, Pantorrilla y Pie"
+  },
+  {
+    "id": 83,
+    "es": "Plantar",
+    "en": "Plantaris",
+    "cat": "PANTORRILLA",
+    "loc": "Parte de ATRÁS de la rodilla y pantorrilla; tiene un vientre diminuto y un tendón muy largo y delgado hacia el talón.",
+    "use": "Ayuda suavemente a los gemelos y envía información al cerebro sobre la posición del tobillo.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/1/1b/Plantaris_muscle_-_posterior_view.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/1/1b/Plantaris_muscle_-_posterior_view.png%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Pierna, Pantorrilla y Pie"
+  },
+  {
+    "id": 84,
+    "es": "Poplíteo",
+    "en": "Popliteus",
+    "cat": "RODILLA / PIERNA",
+    "loc": "Parte de ATRÁS de la rodilla (en el hueco o corva detrás de la rodilla), colocado en diagonal.",
+    "use": "'Destraba' la rodilla cuando está recta para permitir que se empiece a doblar; clave al comenzar a caminar o agacharse.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/2/27/Posterior_compartment_of_leg_-_popliteus_muscle.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/2/27/Posterior_compartment_of_leg_-_popliteus_muscle.png%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Pierna, Pantorrilla y Pie"
+  },
+  {
+    "id": 85,
+    "es": "Fibular largo",
+    "en": "Fibularis longus",
+    "cat": "PIERNA / LATERAL",
+    "loc": "En el LATERAL (costado exterior) de la pierna, desde debajo de la rodilla hasta cruzar por debajo de la planta del pie.",
+    "use": "Girar la planta del pie hacia afuera y bajar la punta; da estabilidad al tobillo en patinaje y fútbol.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/a/a9/Inferior_view_fibularis_longus_muscle_-_animation.gif?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/a/a9/Inferior_view_fibularis_longus_muscle_-_animation.gif%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Pierna, Pantorrilla y Pie"
+  },
+  {
+    "id": 86,
+    "es": "Fibular corto",
+    "en": "Fibularis brevis",
+    "cat": "PIERNA / LATERAL",
+    "loc": "En el LATERAL (costado exterior) de la pierna, por debajo del fibular largo, va hacia la base del dedo meñique del pie.",
+    "use": "Girar el pie hacia afuera; es el principal músculo que evita que el tobillo se doble hacia adentro (esguince de tobillo).",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/8/8b/Gray441.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/8/8b/Gray441.png%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Pierna, Pantorrilla y Pie"
+  },
+  {
+    "id": 87,
+    "es": "Tercer fibular",
+    "en": "Fibularis tertius",
+    "cat": "PIERNA / ANTERIOR",
+    "loc": "Parte del FRENTE y EXTERIOR de la pierna baja, cerca del empeine del pie.",
+    "use": "Subir la punta del pie y ladearlo hacia afuera; ayuda a equilibrar el pie en terrenos irregulares.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/2/2c/Peroneus_tertius_muscle_-_animation.gif?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/2/2c/Peroneus_tertius_muscle_-_animation.gif%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Pierna, Pantorrilla y Pie"
+  },
+  {
+    "id": 88,
+    "es": "Extensor largo de los dedos",
+    "en": "Extensor digitorum longus",
+    "cat": "PIERNA / ANTERIOR",
+    "loc": "Parte del FRENTE de la pierna (hacia afuera de la espinilla); manda tendones a los 4 dedos pequeños del pie.",
+    "use": "Levantar los dedos del pie hacia arriba y subir el empeine para no tropezar al dar el paso al correr.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/5/5f/Gray1241.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/5/5f/Gray1241.png%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Pierna, Pantorrilla y Pie"
+  },
+  {
+    "id": 89,
+    "es": "Extensor largo del dedo gordo",
+    "en": "Extensor hallucis longus",
+    "cat": "PIERNA / ANTERIOR",
+    "loc": "Parte del FRENTE de la pierna, entre la espinilla y el extensor común, directo hacia el dedo gordo del pie.",
+    "use": "Subir el dedo gordo hacia arriba; da el impulso final en cada paso y salto en atletismo.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/8/8b/Gray441.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/8/8b/Gray441.png%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Pierna, Pantorrilla y Pie"
+  },
+  {
+    "id": 90,
+    "es": "Flexor largo de los dedos",
+    "en": "Flexor digitorum longus",
+    "cat": "PIERNA / POSTERIOR",
+    "loc": "Parte de ATRÁS e INTERIOR de la pierna baja, detrás de la espinilla; sus tendones van a la planta de los 4 dedos pequeños.",
+    "use": "Apretar los dedos de los pies contra el suelo para agarrarse al caminar descalzo o impulsarse en carreras.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/9/97/Inferior_view_of_flexor_digitorum_longus_muscle_-_animation.gif?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/9/97/Inferior_view_of_flexor_digitorum_longus_muscle_-_animation.gif%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Pierna, Pantorrilla y Pie"
+  },
+  {
+    "id": 91,
+    "es": "Flexor largo del dedo gordo",
+    "en": "Flexor hallucis longus",
+    "cat": "PIERNA / POSTERIOR",
+    "loc": "Parte de ATRÁS de la pierna, del lado exterior y profundo; su tendón pasa por el tobillo hasta la punta del dedo gordo.",
+    "use": "Empujar el suelo fuertemente con el dedo gordo en el último instante del despegue al correr y saltar.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/9/96/Posterior_compartment_of_leg_-_flexor_hallucis_longus.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/9/96/Posterior_compartment_of_leg_-_flexor_hallucis_longus.png%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Pierna, Pantorrilla y Pie"
+  },
+  {
+    "id": 92,
+    "es": "Abductor del dedo gordo",
+    "en": "Abductor hallucis",
+    "cat": "PIE",
+    "loc": "En la PLANTA del pie, en el borde INTERNO (debajo del arco del pie, cerca del dedo gordo).",
+    "use": "Separar el dedo gordo hacia adentro y soportar el arco del pie al caminar descalzo o bailar.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/e/ed/Sobo_1909_310.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/e/ed/Sobo_1909_310.png%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Pierna, Pantorrilla y Pie"
+  },
+  {
+    "id": 93,
+    "es": "Flexor corto de los dedos",
+    "en": "Flexor digitorum brevis",
+    "cat": "PIE",
+    "loc": "En el CENTRO de la planta del pie, justo en la capa del medio bajo la piel de la planta.",
+    "use": "Doblar los dedos de los pies hacia abajo para amoldar el pie al suelo y amortiguar caídas en saltos.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/e/ee/FootMuscles.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/e/ee/FootMuscles.png%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Pierna, Pantorrilla y Pie"
+  },
+  {
+    "id": 94,
+    "es": "Cuadrado plantar",
+    "en": "Quadratus plantae",
+    "cat": "PIE",
+    "loc": "En la PLANTA del pie, en una capa profunda por debajo del talón.",
+    "use": "Ayuda a doblar los dedos del pie en línea recta corrigiendo la dirección del tirón muscular al correr.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/6/6e/Muscle_carr%C3%A9_plantaire.png",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/6/6e/Muscle_carr%25C3%25A9_plantaire.png&w=500",
+    "region": "Pierna, Pantorrilla y Pie"
+  },
+  {
+    "id": 95,
+    "es": "Extensor corto de los dedos",
+    "en": "Extensor digitorum brevis",
+    "cat": "PIE",
+    "loc": "En el EMPEINE (dorso del pie), la única masa carnosa que se siente encima de los dedos del pie hacia el lado externo.",
+    "use": "Enderezar y subir los dedos de los pies al levantar el pie del suelo.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/8/8b/Gray441.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/8/8b/Gray441.png%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Pierna, Pantorrilla y Pie"
+  },
+  {
+    "id": 96,
+    "es": "Abductor del dedo pequeño",
+    "en": "Abductor digiti minimi",
+    "cat": "PIE",
+    "loc": "En la PLANTA y borde EXTERIOR del pie, recorre el lateral desde el talón hasta el dedo meñique.",
+    "use": "Separar el dedo pequeño hacia afuera y dar equilibrio en apoyos de pie sobre piedras o terrenos desiguales.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/e/ee/FootMuscles.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/e/ee/FootMuscles.png%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Pierna, Pantorrilla y Pie"
+  },
+  {
+    "id": 97,
+    "es": "Extensor largo del pulgar",
+    "en": "Extensor pollicis longus",
+    "cat": "MANO / ANTEBRAZO",
+    "loc": "Parte de ATRÁS del antebrazo, en la zona media; su tendón se marca fuerte en el dorso de la mano al levantar el pulgar.",
+    "use": "Estirar y separar el pulgar hacia atrás; permite abrir la mano para atrapar balones en básquetbol y balonmano.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/e/e7/Anatomical_snuffbox_IMG_6853_a.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/e/e7/Anatomical_snuffbox_IMG_6853_a.jpg%3Futm_source%3Dcommons.wikimedia.org%26utm_campaign%3Dimageinfo%26utm_content%3Doriginal&w=500",
+    "region": "Brazos y Manos"
+  },
+  {
+    "id": 98,
+    "es": "Extensor corto del pulgar",
+    "en": "Extensor pollicis brevis",
+    "cat": "MANO / ANTEBRAZO",
+    "loc": "Parte de ATRÁS y LATERAL del antebrazo, viaja pegado al abductor largo hacia la base del pulgar.",
+    "use": "Estirar la primera articulación del pulgar; se usa al sujetar herramientas y en deportes de raqueta.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/0/06/Gray1231.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/0/06/Gray1231.png%3Futm_source%3Den.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Brazos y Manos"
+  },
+  {
+    "id": 99,
+    "es": "Abductor largo del pulgar",
+    "en": "Abductor pollicis longus",
+    "cat": "MANO / ANTEBRAZO",
+    "loc": "Parte de ATRÁS y LATERAL del antebrazo; su tendón forma el borde de la tabaquera anatómica en la muñeca.",
+    "use": "Abrir y separar el pulgar hacia un lado para poder agarrar objetos anchos como botellas, pesas rusas o bates.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/1/15/Gray424.png?utm_source=es.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/1/15/Gray424.png%3Futm_source%3Des.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Brazos y Manos"
+  },
+  {
+    "id": 100,
+    "es": "Oponente del pulgar",
+    "en": "Opponens pollicis",
+    "cat": "MANO",
+    "loc": "En la PALMA de la mano, forma el borde carnoso en la base del dedo pulgar.",
+    "use": "Llevar el pulgar a tocar la yema de cualquiera de los otros dedos; es el músculo que permite hacer pinza y agarrar barras o mancuernas.",
+    "raw_img": "https://upload.wikimedia.org/wikipedia/commons/2/2e/Musculusopponenspollicis.png?utm_source=es.wikipedia.org&utm_campaign=api&utm_content=original",
+    "img": "https://images.weserv.nl/?url=https%3A//upload.wikimedia.org/wikipedia/commons/2/2e/Musculusopponenspollicis.png%3Futm_source%3Des.wikipedia.org%26utm_campaign%3Dapi%26utm_content%3Doriginal&w=500",
+    "region": "Brazos y Manos"
+  }
+];
+
+let filteredMuscles = [...allMuscles];
+let idx = 0;
+const card = document.getElementById('card');
+const imgFront = document.getElementById('m-img-front');
+const imgBack = document.getElementById('m-img-back');
+const spinnerFront = document.getElementById('img-spinner-front');
+const spinnerBack = document.getElementById('img-spinner-back');
+
+// Configuración de manejadores de carga y fallback dual
+function setupImg(img, spinner) {
+    img.onload = () => {
+        img.classList.remove('loading');
+        spinner.style.display = 'none';
+    };
+
+    img.onerror = () => {
+        const current = filteredMuscles[idx];
+        if (current && current.raw_img && img.src !== current.raw_img) {
+            console.warn('Proxy falló, reintentando con Wikimedia directo:', current.raw_img);
+            img.src = current.raw_img;
+        } else {
+            spinner.style.display = 'none';
+            img.classList.remove('loading');
+        }
+    };
+}
+
+setupImg(imgFront, spinnerFront);
+setupImg(imgBack, spinnerBack);
+
+function update() {
+    card.classList.remove('is-flipped');
+    if (filteredMuscles.length === 0) return;
+    
+    const m = filteredMuscles[idx];
+    
+    // Preparar imágenes (frontal blurred, trasera sharp)
+    spinnerFront.style.display = 'block';
+    spinnerBack.style.display = 'block';
+    imgFront.classList.add('loading');
+    imgBack.classList.add('loading');
+
+    imgFront.src = m.img;
+    imgBack.src = m.img;
+
+    // Asignar textos y enlace de YouTube
+    document.getElementById('m-loc').textContent = m.loc;
+    document.getElementById('m-use').textContent = m.use;
+    document.getElementById('m-es').textContent = m.es;
+    document.getElementById('m-en').textContent = m.en;
+    document.getElementById('badge-cat').textContent = m.cat;
+    document.getElementById('back-cat').textContent = m.cat;
+
+    // Enlace a YouTube específico para ejercitar este músculo
+    const ytQuery = encodeURIComponent(`como ejercitar ${m.es} mejores ejercicios fitness`);
+    document.getElementById('m-yt-link').href = `https://www.youtube.com/results?search_query=${ytQuery}`;
+
+    // Actualizar progreso
+    const currentNum = idx + 1;
+    const total = filteredMuscles.length;
+    document.getElementById('count').textContent = `Músculo ${currentNum} de ${total}`;
+    document.getElementById('fill').style.width = `${(currentNum / total) * 100}%`;
+}
+
+function flipCard() {
+    card.classList.toggle('is-flipped');
+}
+
+function next() {
+    if (filteredMuscles.length <= 1) return;
+    idx = (idx + 1) % filteredMuscles.length;
+    update();
+}
+
+function prev() {
+    if (filteredMuscles.length <= 1) return;
+    idx = (idx - 1 + filteredMuscles.length) % filteredMuscles.length;
+    update();
+}
+
+function shuffle() {
+    // Animación visual de barajado
+    card.classList.add('is-shuffling');
+    setTimeout(() => card.classList.remove('is-shuffling'), 450);
+
+    // Mensaje flotante (toast)
+    const toast = document.getElementById('toast');
+    if (toast) {
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 1500);
+    }
+
+    for (let i = filteredMuscles.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [filteredMuscles[i], filteredMuscles[j]] = [filteredMuscles[j], filteredMuscles[i]];
+    }
+    idx = 0;
+    update();
+}
+
+function changeRegion(region) {
+    if (region === 'ALL') {
+        filteredMuscles = [...allMuscles];
+        document.getElementById('region-status').textContent = `Todos (${allMuscles.length})`;
+    } else {
+        filteredMuscles = allMuscles.filter(m => m.region === region);
+        document.getElementById('region-status').textContent = `${region} (${filteredMuscles.length})`;
+    }
+    idx = 0;
+    update();
+}
+
+// Control por teclado
+document.addEventListener('keydown', (e) => {
+    if (e.target.tagName === 'SELECT' || e.target.tagName === 'INPUT') return;
+    
+    if (e.code === 'Space' || e.key === ' ' || e.key === 'Enter') {
+        e.preventDefault();
+        flipCard();
+    } else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
+        next();
+    } else if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
+        prev();
+    } else if (e.key === 's' || e.key === 'S') {
+        shuffle();
+    }
+});
+
+// Iniciar aplicación
+update();
+</script>
+</body>
+</html>
