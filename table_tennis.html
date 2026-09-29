@@ -260,6 +260,7 @@
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
       cursor: default;
       display: block;
+      touch-action: none;
     }
 
     /* Overlay Banner for Pause / Victory */
@@ -442,6 +443,162 @@
       color: #fff;
     }
 
+    /* ==========================================================================
+       PORTRAIT ROTATION OVERLAY & ANIMATION
+       ========================================================================== */
+    .portrait-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(12, 16, 23, 0.98);
+      z-index: 9999;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 32px 24px;
+    }
+
+    /* Shown automatically in portrait mode on mobile/tablet */
+    @media screen and (orientation: portrait) and (max-width: 950px) {
+      .portrait-overlay {
+        display: flex;
+      }
+    }
+
+    .rotate-phone-anim {
+      width: 72px;
+      height: 72px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .phone-body {
+      width: 36px;
+      height: 60px;
+      border: 3px solid #10b981;
+      border-radius: 9px;
+      position: relative;
+      animation: rotatePhone 2.2s ease-in-out infinite;
+      box-shadow: 0 0 20px rgba(16, 185, 129, 0.35);
+    }
+
+    .phone-body::after {
+      content: '';
+      position: absolute;
+      top: 4px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 12px;
+      height: 3px;
+      background: #10b981;
+      border-radius: 2px;
+    }
+
+    @keyframes rotatePhone {
+      0%, 15% { transform: rotate(0deg); }
+      50%, 85% { transform: rotate(-90deg); }
+      100% { transform: rotate(0deg); }
+    }
+
+    .rotate-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 10px;
+    }
+
+    .rotate-desc {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      max-width: 320px;
+      line-height: 1.5;
+      margin-bottom: 24px;
+    }
+
+    .rotate-btn {
+      background: #10b981;
+      color: white;
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 700;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* ==========================================================================
+       TOUCH D-PAD (FOR TOUCH SCREENS)
+       ========================================================================== */
+    .touch-dpad {
+      display: none;
+      position: absolute;
+      bottom: 14px;
+      left: 14px;
+      z-index: 25;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: none;
+      background: rgba(12, 16, 23, 0.65);
+      padding: 6px;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    /* Display D-Pad on touch devices or small screens */
+    @media (hover: none) and (pointer: coarse) {
+      .touch-dpad {
+        display: flex;
+      }
+    }
+
+    .dpad-middle {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .dpad-btn {
+      width: 44px;
+      height: 44px;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 10px;
+      color: #ffffff;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: none;
+      transition: background 0.1s, transform 0.1s;
+    }
+
+    .dpad-btn:active, .dpad-btn.pressed {
+      background: rgba(16, 185, 129, 0.5);
+      border-color: #10b981;
+      transform: scale(0.92);
+    }
+
+    .dpad-center {
+      width: 22px;
+      height: 22px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 6px;
+    }
+
     /* Responsiveness for compact screens */
     @media (max-width: 820px) {
       body {
@@ -463,9 +620,116 @@
         font-size: 1rem;
       }
     }
+
+    /* Mobile landscape compact mode */
+    @media (max-height: 540px) {
+      body {
+        padding: 3px 8px;
+        justify-content: space-between;
+      }
+      .header-bar {
+        padding: 4px 10px;
+        gap: 6px;
+        border-radius: 8px;
+      }
+      .brand-title {
+        font-size: 0.92rem;
+      }
+      .brand-badge {
+        display: none;
+      }
+      .setting-item {
+        gap: 4px;
+      }
+      .setting-label {
+        font-size: 0.68rem;
+      }
+      .pill-btn {
+        padding: 3px 8px;
+        font-size: 0.72rem;
+      }
+      .step-btn {
+        width: 22px;
+        height: 22px;
+        font-size: 0.85rem;
+      }
+      .step-value {
+        font-size: 0.8rem;
+        min-width: 26px;
+      }
+      .icon-action-btn {
+        padding: 4px 8px;
+        font-size: 0.72rem;
+      }
+      .arena-container {
+        margin: 2px 0;
+      }
+      .table-wrapper {
+        max-height: calc(100vh - 88px);
+      }
+      .scoreboard-bar {
+        padding: 4px 12px;
+        border-radius: 8px;
+        gap: 8px;
+      }
+      .player-card {
+        min-width: 110px;
+        gap: 8px;
+      }
+      .player-avatar {
+        width: 28px;
+        height: 28px;
+        font-size: 0.85rem;
+        border-radius: 6px;
+      }
+      .player-name-tag {
+        font-size: 0.7rem;
+      }
+      .player-keys-guide {
+        font-size: 0.62rem;
+      }
+      .big-score {
+        font-size: 1.5rem;
+        min-width: 30px;
+      }
+      .score-cluster {
+        gap: 10px;
+      }
+      .target-pill {
+        font-size: 0.62rem;
+        padding: 2px 6px;
+      }
+      .rally-tracker {
+        font-size: 0.62rem;
+      }
+      .touch-dpad {
+        bottom: 8px;
+        left: 8px;
+        padding: 3px;
+      }
+      .dpad-btn {
+        width: 34px;
+        height: 34px;
+        font-size: 0.9rem;
+      }
+      .dpad-center {
+        width: 14px;
+        height: 14px;
+      }
+    }
   </style>
 </head>
 <body>
+
+  <!-- Mobile Portrait Rotate Device Overlay -->
+  <div id="portraitOverlay" class="portrait-overlay">
+    <div class="rotate-phone-anim">
+      <div class="phone-body"></div>
+    </div>
+    <div class="rotate-title">Rotate Your Device</div>
+    <div class="rotate-desc">Table Tennis Championship is played in <strong>Landscape</strong> view for the best experience.</div>
+    <button class="rotate-btn" id="rotateFsBtn">⛶ Rotate & Fullscreen</button>
+  </div>
 
   <!-- ==========================================================================
        STEP 2 & 4: TOP CONTROLS & SETTINGS
@@ -508,10 +772,13 @@
         </div>
       </div>
 
-      <!-- Quick Audio Toggle & Pause/Restart -->
+      <!-- Quick Audio Toggle, Fullscreen & Pause/Restart -->
       <div class="setting-item">
         <button class="icon-action-btn" id="soundToggleBtn" title="Toggle Sound FX">
           <span id="soundIcon">🔊</span> Sound
+        </button>
+        <button class="icon-action-btn" id="fullscreenBtn" title="Fullscreen / Landscape">
+          <span id="fullscreenIcon">⛶</span> Fullscreen
         </button>
         <button class="icon-action-btn" id="pauseBtn" title="Pause Game (Spacebar)">
           <span id="pauseIcon">⏸</span> Pause
@@ -526,6 +793,17 @@
   <main class="arena-container">
     <div class="table-wrapper">
       <canvas id="gameCanvas" width="1000" height="560"></canvas>
+
+      <!-- Touch D-Pad (for touchscreens) -->
+      <div id="touchDpad" class="touch-dpad">
+        <button class="dpad-btn dpad-up" data-dir="up" aria-label="Up">▲</button>
+        <div class="dpad-middle">
+          <button class="dpad-btn dpad-left" data-dir="left" aria-label="Left">◀</button>
+          <div class="dpad-center"></div>
+          <button class="dpad-btn dpad-right" data-dir="right" aria-label="Right">▶</button>
+        </div>
+        <button class="dpad-btn dpad-down" data-dir="down" aria-label="Down">▼</button>
+      </div>
 
       <!-- Victory / Match Point Modal -->
       <div class="overlay-modal" id="gameModal">
@@ -768,6 +1046,43 @@
         keys[e.code] = false;
       });
 
+      // --- LANDSCAPE & FULLSCREEN HANDLING ---
+      function enterLandscapeFullscreen() {
+        try {
+          const el = document.documentElement;
+          if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+            const rfs = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen || el.mozRequestFullScreen;
+            if (rfs) {
+              rfs.call(el).catch(() => {});
+            }
+          }
+          if (screen.orientation && screen.orientation.lock) {
+            screen.orientation.lock('landscape').catch(() => {});
+          }
+        } catch (e) {}
+      }
+
+      function exitFullscreen() {
+        try {
+          const efs = document.exitFullscreen || document.webkitExitFullscreen || document.msExitFullscreen || document.mozCancelFullScreen;
+          if (efs && (document.fullscreenElement || document.webkitFullscreenElement)) {
+            efs.call(document).catch(() => {});
+          }
+        } catch (e) {}
+      }
+
+      function checkOrientation() {
+        const isPortrait = window.innerHeight > window.innerWidth && window.innerWidth <= 950;
+        const portraitOverlay = document.getElementById('portraitOverlay');
+        if (portraitOverlay) {
+          portraitOverlay.style.display = isPortrait ? 'flex' : 'none';
+        }
+      }
+
+      window.addEventListener('resize', checkOrientation);
+      window.addEventListener('orientationchange', checkOrientation);
+      checkOrientation();
+
       // --- DOM ELEMENT REFERENCES ---
       const mode1PBtn = document.getElementById('mode1PBtn');
       const mode2PBtn = document.getElementById('mode2PBtn');
@@ -780,8 +1095,10 @@
       const targetPillBadge = document.getElementById('targetPillBadge');
       const soundToggleBtn = document.getElementById('soundToggleBtn');
       const soundIcon = document.getElementById('soundIcon');
+      const fullscreenBtn = document.getElementById('fullscreenBtn');
       const pauseBtn = document.getElementById('pauseBtn');
       const pauseIcon = document.getElementById('pauseIcon');
+      const rotateFsBtn = document.getElementById('rotateFsBtn');
 
       const p1ScoreText = document.getElementById('p1ScoreText');
       const p2ScoreText = document.getElementById('p2ScoreText');
@@ -798,9 +1115,48 @@
       const modalActionBtn = document.getElementById('modalActionBtn');
 
       // --- EVENT HANDLERS ---
+      if (fullscreenBtn) {
+        fullscreenBtn.addEventListener('click', () => {
+          initAudio();
+          if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+            enterLandscapeFullscreen();
+          } else {
+            exitFullscreen();
+          }
+        });
+      }
+
+      if (rotateFsBtn) {
+        rotateFsBtn.addEventListener('click', () => {
+          initAudio();
+          enterLandscapeFullscreen();
+        });
+      }
+
       // Mode Selection (1 Player vs 2 Players)
       mode1PBtn.addEventListener('click', () => setMode('1p'));
       mode2PBtn.addEventListener('click', () => setMode('2p'));
+
+      let isTouchDevice = false;
+
+      function updateControlsGuide() {
+        if (state.mode === '1p') {
+          if (isTouchDevice) {
+            p1KeysGuide.innerHTML = 'Move: <kbd class="kbd-chip">Touch & Drag</kbd> or <kbd class="kbd-chip">D-Pad</kbd>';
+          } else {
+            p1KeysGuide.innerHTML = 'Move: <kbd class="kbd-chip">W</kbd><kbd class="kbd-chip">A</kbd><kbd class="kbd-chip">S</kbd><kbd class="kbd-chip">D</kbd> or <kbd class="kbd-chip">↑</kbd><kbd class="kbd-chip">←</kbd><kbd class="kbd-chip">↓</kbd><kbd class="kbd-chip">→</kbd>';
+          }
+          p2KeysGuide.textContent = 'AI Controlled';
+        } else {
+          if (isTouchDevice) {
+            p1KeysGuide.innerHTML = 'P1: <kbd class="kbd-chip">Left Court Touch</kbd>';
+            p2KeysGuide.innerHTML = 'P2: <kbd class="kbd-chip">Right Court Touch</kbd>';
+          } else {
+            p1KeysGuide.innerHTML = 'P1: <kbd class="kbd-chip">W</kbd><kbd class="kbd-chip">A</kbd><kbd class="kbd-chip">S</kbd><kbd class="kbd-chip">D</kbd>';
+            p2KeysGuide.innerHTML = 'P2: <kbd class="kbd-chip">↑</kbd><kbd class="kbd-chip">←</kbd><kbd class="kbd-chip">↓</kbd><kbd class="kbd-chip">→</kbd>';
+          }
+        }
+      }
 
       function setMode(newMode) {
         initAudio();
@@ -812,8 +1168,6 @@
           diffButtons.forEach(btn => btn.disabled = false);
           p2NameTag.textContent = 'Computer';
           p2Avatar.textContent = '🤖';
-          p1KeysGuide.innerHTML = 'Move: <kbd class="kbd-chip">W</kbd><kbd class="kbd-chip">A</kbd><kbd class="kbd-chip">S</kbd><kbd class="kbd-chip">D</kbd> or <kbd class="kbd-chip">↑</kbd><kbd class="kbd-chip">←</kbd><kbd class="kbd-chip">↓</kbd><kbd class="kbd-chip">→</kbd>';
-          p2KeysGuide.textContent = 'AI Controlled';
         } else {
           mode2PBtn.classList.add('active');
           mode1PBtn.classList.remove('active');
@@ -821,11 +1175,153 @@
           diffButtons.forEach(btn => btn.disabled = true);
           p2NameTag.textContent = 'Player 2';
           p2Avatar.textContent = '👥';
-          p1KeysGuide.innerHTML = 'P1: <kbd class="kbd-chip">W</kbd><kbd class="kbd-chip">A</kbd><kbd class="kbd-chip">S</kbd><kbd class="kbd-chip">D</kbd>';
-          p2KeysGuide.innerHTML = 'P2: <kbd class="kbd-chip">↑</kbd><kbd class="kbd-chip">←</kbd><kbd class="kbd-chip">↓</kbd><kbd class="kbd-chip">→</kbd>';
         }
+        updateControlsGuide();
         resetMatch();
       }
+
+      // --- TOUCHSCREEN GAMEPLAY CONTROLS ---
+      let touchP1Id = null;
+      let touchP2Id = null;
+      let touchP1LastX = null;
+      let touchP2LastX = null;
+      let touchP1IsAdvancing = false;
+      let touchP2IsAdvancing = false;
+
+      function notifyTouchUsed() {
+        if (!isTouchDevice) {
+          isTouchDevice = true;
+          updateControlsGuide();
+        }
+      }
+
+      function getCanvasTouchCoords(touch) {
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = VIRTUAL_WIDTH / rect.width;
+        const scaleY = VIRTUAL_HEIGHT / rect.height;
+        return {
+          x: (touch.clientX - rect.left) * scaleX,
+          y: (touch.clientY - rect.top) * scaleY
+        };
+      }
+
+      canvas.addEventListener('touchstart', (e) => {
+        initAudio();
+        enterLandscapeFullscreen();
+        notifyTouchUsed();
+        e.preventDefault();
+
+        for (let i = 0; i < e.changedTouches.length; i++) {
+          const t = e.changedTouches[i];
+          const coords = getCanvasTouchCoords(t);
+
+          if (state.mode === '2p') {
+            if (coords.x < VIRTUAL_WIDTH / 2 && touchP1Id === null) {
+              touchP1Id = t.identifier;
+              touchP1LastX = coords.x;
+              moveP1ToTouch(coords.x, coords.y);
+            } else if (coords.x >= VIRTUAL_WIDTH / 2 && touchP2Id === null) {
+              touchP2Id = t.identifier;
+              touchP2LastX = coords.x;
+              moveP2ToTouch(coords.x, coords.y);
+            }
+          } else {
+            // 1P Mode: touch on screen controls P1
+            if (touchP1Id === null) {
+              touchP1Id = t.identifier;
+              touchP1LastX = coords.x;
+              moveP1ToTouch(coords.x, coords.y);
+            }
+          }
+        }
+      }, { passive: false });
+
+      canvas.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+        for (let i = 0; i < e.changedTouches.length; i++) {
+          const t = e.changedTouches[i];
+          const coords = getCanvasTouchCoords(t);
+
+          if (t.identifier === touchP1Id) {
+            if (touchP1LastX !== null) {
+              touchP1IsAdvancing = (coords.x - touchP1LastX > 3);
+            }
+            touchP1LastX = coords.x;
+            moveP1ToTouch(coords.x, coords.y);
+          } else if (t.identifier === touchP2Id) {
+            if (touchP2LastX !== null) {
+              touchP2IsAdvancing = (coords.x - touchP2LastX < -3);
+            }
+            touchP2LastX = coords.x;
+            moveP2ToTouch(coords.x, coords.y);
+          }
+        }
+      }, { passive: false });
+
+      function endTouch(e) {
+        for (let i = 0; i < e.changedTouches.length; i++) {
+          const t = e.changedTouches[i];
+          if (t.identifier === touchP1Id) {
+            touchP1Id = null;
+            touchP1LastX = null;
+            touchP1IsAdvancing = false;
+          }
+          if (t.identifier === touchP2Id) {
+            touchP2Id = null;
+            touchP2LastX = null;
+            touchP2IsAdvancing = false;
+          }
+        }
+      }
+
+      canvas.addEventListener('touchend', endTouch);
+      canvas.addEventListener('touchcancel', endTouch);
+
+      function moveP1ToTouch(tx, ty) {
+        p1.x = Math.max(14, Math.min(VIRTUAL_WIDTH / 2 - p1.width - 12, tx - p1.width / 2));
+        p1.y = Math.max(14, Math.min(VIRTUAL_HEIGHT - PADDLE_HEIGHT - 14, ty - p1.height / 2));
+      }
+
+      function moveP2ToTouch(tx, ty) {
+        p2.x = Math.max(VIRTUAL_WIDTH / 2 + 12, Math.min(VIRTUAL_WIDTH - 14 - p2.width, tx - p2.width / 2));
+        p2.y = Math.max(14, Math.min(VIRTUAL_HEIGHT - PADDLE_HEIGHT - 14, ty - p2.height / 2));
+      }
+
+      // --- VIRTUAL D-PAD BUTTON CONTROLS ---
+      const dpadButtons = document.querySelectorAll('.dpad-btn');
+      dpadButtons.forEach(btn => {
+        const dir = btn.dataset.dir;
+        const keyMap = {
+          up: 'KeyW',
+          down: 'KeyS',
+          left: 'KeyA',
+          right: 'KeyD'
+        };
+        const mappedCode = keyMap[dir];
+
+        function pressDir(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          initAudio();
+          notifyTouchUsed();
+          btn.classList.add('pressed');
+          keys[mappedCode] = true;
+        }
+
+        function releaseDir(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          btn.classList.remove('pressed');
+          keys[mappedCode] = false;
+        }
+
+        btn.addEventListener('touchstart', pressDir, { passive: false });
+        btn.addEventListener('touchend', releaseDir);
+        btn.addEventListener('touchcancel', releaseDir);
+        btn.addEventListener('mousedown', pressDir);
+        btn.addEventListener('mouseup', releaseDir);
+        btn.addEventListener('mouseleave', releaseDir);
+      });
 
       // Difficulty Buttons
       diffButtons.forEach(btn => {
@@ -1098,7 +1594,8 @@
             ball.y <= p1.y + p1.height + 6) {
 
           ball.x = p1.x + p1.width + ball.radius; // Resolve penetration
-          handlePaddleHit(p1, 1, p1Right);
+          handlePaddleHit(p1, 1, p1Right || touchP1IsAdvancing);
+          touchP1IsAdvancing = false;
         }
 
         // Player 2 Collision (Right Paddle)
@@ -1109,7 +1606,8 @@
             ball.y <= p2.y + p2.height + 6) {
 
           ball.x = p2.x - ball.radius; // Resolve penetration
-          handlePaddleHit(p2, -1, p2IsAdvancing);
+          handlePaddleHit(p2, -1, p2IsAdvancing || touchP2IsAdvancing);
+          touchP2IsAdvancing = false;
         }
 
         // --- SCORING GOAL BOUNDARIES ---
