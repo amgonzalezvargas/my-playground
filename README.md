@@ -2,7 +2,7 @@
 
 A personal playground workspace for experiments, single-file HTML applications, prototypes, and interactive tools.
 
-👉 **Launch the Portal:** Open [**`index.html`**](./index.html) (or [`My Playground.html`](./My%20Playground.html)) to access the interactive visual menu with cards and thumbnails.
+👉 **Launch the Portal:** Open [**`index.html`**](./index.html) to access the interactive visual menu with cards and thumbnails.
 
 ---
 
@@ -18,7 +18,7 @@ A personal playground workspace for experiments, single-file HTML applications, 
 ### 2. [Secure Password Generator](./password_generator.html)
 - **Language**: **English**
 - **File**: [`password_generator.html`](./password_generator.html)
-- **Description**: A client-side generator for creating strong, cryptographically secure passwords. Includes customizable options for password length, character sets (uppercase, lowercase, numbers, symbols), a real-time security strength meter, and one-click clipboard copying.
+- **Description**: A client-side generator for creating strong, cryptographically secure passwords using the Web Crypto API (`window.crypto.getRandomValues`). Includes customizable length, character sets (uppercase, lowercase, numbers, symbols), visual dot masking (`••••••••`) with reveal toggle, a 60-second automatic clipboard purge timer with focus recovery, strict Content Security Policy (CSP) air-gap protection, real-time strength meter, and one-click copying.
 
 ---
 
