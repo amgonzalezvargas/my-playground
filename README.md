@@ -29,7 +29,7 @@ A personal playground workspace for experiments, single-file HTML applications, 
 
 ---
 
-### 4. [Text File Merger](./txt_file_merger.html)
+### 4. [Text & Markdown File Merger](./txt_file_merger.html)
 - **Language**: **English**
 - **File**: [`txt_file_merger.html`](./txt_file_merger.html)
-- **Description**: A utility for loading and combining multiple `.txt` files into a single unified file. Separates contents with clean filename headers, provides a preview textarea, supports instant copying to the clipboard, and offers one-click downloading of the merged file.
+- **Description**: A versatile client-side utility for loading and combining multiple `.md`, `.txt`, `.json`, `.csv`, `.yaml`, `.log`, and other plain or semistructured documents into a unified output file. Features drag & drop, customizable separator headers (Dashed banners, Markdown `#`/`##`/`---`, code blocks, or comments), file reordering and sorting, live preview with line/word/size statistics, one-click clipboard copying, and smart-extension file downloads.

@@ -1,240 +1,1372 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Text File Merger</title>
-<style>
-  body {
-    font-family: -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-    max-width: 800px;
-    margin: 40px auto;
-    padding: 0 20px;
-    background: #f7f8fa;
-    color: #1a1a1a;
-  }
-  h1 { font-size: 1.6rem; margin-bottom: 4px; }
-  p.subtitle { color: #555; margin-top: 0; }
-  .card {
-    background: #fff;
-    border: 1px solid #e2e2e2;
-    border-radius: 10px;
-    padding: 24px;
-    margin-top: 20px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-  }
-  input[type="file"] {
-    display: block;
-    margin: 12px 0;
-  }
-  #fileList {
-    list-style: none;
-    padding: 0;
-    margin: 12px 0;
-  }
-  #fileList li {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 12px;
-    border: 1px solid #e2e2e2;
-    border-radius: 6px;
-    margin-bottom: 6px;
-    background: #fafafa;
-  }
-  #fileList li span.name { font-weight: 500; }
-  #fileList li button {
-    background: none;
-    border: none;
-    color: #c0392b;
-    cursor: pointer;
-    font-size: 0.9rem;
-  }
-  .btn-row { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
-  button.primary {
-    background: #2d6cdf;
-    color: #fff;
-    border: none;
-    padding: 10px 18px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 0.95rem;
-  }
-  button.primary:disabled { background: #a9c1e8; cursor: not-allowed; }
-  button.secondary {
-    background: #eee;
-    border: 1px solid #ccc;
-    padding: 10px 18px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 0.95rem;
-  }
-  textarea {
-    width: 100%;
-    height: 320px;
-    margin-top: 16px;
-    font-family: "SFMono-Regular", Consolas, Menlo, monospace;
-    font-size: 0.85rem;
-    padding: 12px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    box-sizing: border-box;
-    resize: vertical;
-  }
-  .filename-input {
-    margin-top: 12px;
-  }
-  .filename-input label {
-    font-size: 0.85rem;
-    color: #444;
-    display: block;
-    margin-bottom: 4px;
-  }
-  .filename-input input {
-    padding: 8px 10px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    width: 260px;
-  }
-  .hint { font-size: 0.8rem; color: #777; margin-top: 6px; }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Text & Markdown File Merger | My Playground</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090d16;
+      --surface-1: #111726;
+      --surface-2: #182033;
+      --surface-card: rgba(20, 27, 44, 0.78);
+      --border: rgba(255, 255, 255, 0.08);
+      --border-hover: rgba(99, 102, 241, 0.45);
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent: #6366f1;
+      --accent-hover: #4f46e5;
+      --accent-glow: rgba(99, 102, 241, 0.25);
+      --emerald: #10b981;
+      --emerald-glow: rgba(16, 185, 129, 0.25);
+      --rose: #f43f5e;
+      --amber: #f59e0b;
+      --cyan: #06b6d4;
+      --font-display: 'Outfit', -apple-system, sans-serif;
+      --font-body: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', 'SFMono-Regular', Consolas, monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      background-image: 
+        radial-gradient(circle at 12% 15%, rgba(99, 102, 241, 0.12) 0%, transparent 45%),
+        radial-gradient(circle at 88% 50%, rgba(16, 185, 129, 0.08) 0%, transparent 45%),
+        radial-gradient(circle at 50% 92%, rgba(244, 63, 94, 0.06) 0%, transparent 50%);
+      color: var(--text);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 32px 20px 48px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 920px;
+      margin: 0 auto;
+    }
+
+    /* Top Navigation */
+    .top-nav {
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #a5b4fc;
+      font-size: 0.88rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: color 0.18s, transform 0.18s;
+    }
+
+    .back-link:hover {
+      color: #fff;
+      transform: translateX(-3px);
+    }
+
+    /* Hero Header */
+    header {
+      margin-bottom: 28px;
+      text-align: center;
+      position: relative;
+    }
+
+    .badge-top {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 14px;
+      background: rgba(99, 102, 241, 0.12);
+      border: 1px solid rgba(99, 102, 241, 0.25);
+      border-radius: 9999px;
+      color: #a5b4fc;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+    }
+
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: 2.4rem;
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      line-height: 1.2;
+      margin-bottom: 10px;
+      background: linear-gradient(135deg, #ffffff 40%, #c7d2fe 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-desc {
+      font-size: 1rem;
+      color: var(--text-muted);
+      max-width: 660px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    /* Main Card Container */
+    .card {
+      background: var(--surface-card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 28px;
+      backdrop-filter: blur(14px);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+      margin-bottom: 28px;
+    }
+
+    /* Drag & Drop Upload Zone */
+    .drop-zone {
+      border: 2px dashed rgba(255, 255, 255, 0.16);
+      border-radius: 14px;
+      padding: 32px 20px;
+      text-align: center;
+      background: rgba(15, 23, 42, 0.4);
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+    }
+
+    .drop-zone:hover,
+    .drop-zone.drag-active {
+      border-color: var(--accent);
+      background: rgba(99, 102, 241, 0.08);
+      box-shadow: 0 0 25px var(--accent-glow);
+      transform: translateY(-1px);
+    }
+
+    .drop-zone input[type="file"] {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .upload-icon {
+      font-size: 2.2rem;
+      margin-bottom: 10px;
+      display: inline-block;
+      animation: floatSlow 3s ease-in-out infinite;
+    }
+
+    @keyframes floatSlow {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+
+    .drop-title {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+
+    .drop-sub {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+    }
+
+    .format-pills {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 6px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .format-pill {
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.05);
+      color: #cbd5e1;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      letter-spacing: 0.02em;
+    }
+
+    /* File List & Controls */
+    .list-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 24px;
+      margin-bottom: 12px;
+    }
+
+    .list-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .list-title {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .list-count-badge {
+      background: rgba(99, 102, 241, 0.15);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      color: #c7d2fe;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 12px;
+    }
+
+    .list-actions {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .mini-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-family: inherit;
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 5px 10px;
+      border-radius: 7px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.15s;
+    }
+
+    .mini-btn:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .mini-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .mini-btn.danger:hover:not(:disabled) {
+      background: rgba(244, 63, 94, 0.15);
+      border-color: rgba(244, 63, 94, 0.4);
+      color: #fda4af;
+    }
+
+    /* Selected Files Container */
+    #fileList {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 380px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    #fileList::-webkit-scrollbar {
+      width: 6px;
+    }
+    #fileList::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 3px;
+    }
+    #fileList::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 3px;
+    }
+
+    .file-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 14px;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      transition: all 0.15s ease;
+    }
+
+    .file-item:hover {
+      background: rgba(26, 38, 65, 0.6);
+      border-color: rgba(99, 102, 241, 0.3);
+    }
+
+    .file-meta-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      overflow: hidden;
+      flex: 1;
+    }
+
+    .file-idx {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      width: 22px;
+      text-align: right;
+      font-family: var(--font-mono);
+    }
+
+    /* Format Badges */
+    .ext-badge {
+      font-size: 0.68rem;
+      font-weight: 800;
+      padding: 3px 6px;
+      border-radius: 5px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      font-family: var(--font-mono);
+      white-space: nowrap;
+    }
+
+    .badge-md { background: rgba(6, 182, 212, 0.15); border: 1px solid rgba(6, 182, 212, 0.35); color: #67e8f9; }
+    .badge-txt { background: rgba(99, 102, 241, 0.15); border: 1px solid rgba(99, 102, 241, 0.35); color: #a5b4fc; }
+    .badge-json { background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.35); color: #fcd34d; }
+    .badge-csv { background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.35); color: #6ee7b7; }
+    .badge-yaml { background: rgba(249, 115, 22, 0.15); border: 1px solid rgba(249, 115, 22, 0.35); color: #fdba74; }
+    .badge-xml { background: rgba(236, 72, 153, 0.15); border: 1px solid rgba(236, 72, 153, 0.35); color: #f472b6; }
+    .badge-log { background: rgba(168, 85, 247, 0.15); border: 1px solid rgba(168, 85, 247, 0.35); color: #d8b4fe; }
+    .badge-code { background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.35); color: #93c5fd; }
+    .badge-default { background: rgba(148, 163, 184, 0.15); border: 1px solid rgba(148, 163, 184, 0.35); color: #cbd5e1; }
+
+    .file-name {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #f1f5f9;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-family: var(--font-mono);
+    }
+
+    .file-size {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .item-actions {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .btn-icon {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 5px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+    }
+
+    .btn-icon:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+    }
+
+    .btn-icon.btn-delete:hover {
+      background: rgba(244, 63, 94, 0.15);
+      color: #fb7185;
+    }
+
+    /* Empty state */
+    .empty-list {
+      text-align: center;
+      padding: 24px;
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      border: 1px dashed var(--border);
+      border-radius: 10px;
+    }
+
+    /* Options Panel */
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+    }
+
+    .option-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .option-group label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #cbd5e1;
+    }
+
+    .select-custom,
+    .text-input {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 9px 12px;
+      font-family: inherit;
+      font-size: 0.88rem;
+      color: #fff;
+      outline: none;
+      transition: all 0.18s;
+    }
+
+    .select-custom option {
+      background: #111726;
+      color: #fff;
+    }
+
+    .select-custom:focus,
+    .text-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    .checkbox-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      color: #cbd5e1;
+      margin-top: 4px;
+    }
+
+    .checkbox-wrap input[type="checkbox"] {
+      accent-color: var(--accent);
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+
+    .ext-chips {
+      display: flex;
+      gap: 5px;
+      margin-top: 6px;
+      flex-wrap: wrap;
+    }
+
+    .ext-chip {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 0.72rem;
+      font-family: var(--font-mono);
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .ext-chip:hover {
+      background: rgba(99, 102, 241, 0.15);
+      color: #a5b4fc;
+      border-color: rgba(99, 102, 241, 0.3);
+    }
+
+    /* Action Buttons Row */
+    .btn-row {
+      display: flex;
+      gap: 12px;
+      margin-top: 22px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      font-family: inherit;
+      font-size: 0.92rem;
+      font-weight: 600;
+      padding: 10px 20px;
+      border-radius: 9px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+      border: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent) 0%, #4338ca 100%);
+      color: #fff;
+      box-shadow: 0 4px 15px var(--accent-glow);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: linear-gradient(135deg, #7174f8 0%, var(--accent) 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, #059669 0%, #047857 100%);
+      color: #fff;
+      box-shadow: 0 4px 15px var(--emerald-glow);
+    }
+
+    .btn-success:hover:not(:disabled) {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border);
+      color: #e2e8f0;
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      transform: none !important;
+      box-shadow: none !important;
+    }
+
+    /* Output Editor Area */
+    .output-section {
+      margin-top: 26px;
+    }
+
+    .output-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .output-title {
+      font-family: var(--font-display);
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .stats-bar {
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .stat-item span {
+      color: #e2e8f0;
+      font-weight: 600;
+    }
+
+    .textarea-wrap {
+      position: relative;
+    }
+
+    textarea#output {
+      width: 100%;
+      height: 340px;
+      background: rgba(10, 15, 29, 0.85);
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      line-height: 1.6;
+      color: #e2e8f0;
+      padding: 16px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      box-sizing: border-box;
+      resize: vertical;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    textarea#output:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    textarea#output::placeholder {
+      color: #475569;
+    }
+
+    /* Footer */
+    footer {
+      margin-top: auto;
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+      padding-top: 24px;
+    }
+
+    footer a {
+      color: #a5b4fc;
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* Notification Toast */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #1e293b;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      font-weight: 500;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 999;
+      pointer-events: none;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    @media (max-width: 640px) {
+      body {
+        padding: 16px 12px 32px;
+      }
+      .card {
+        padding: 18px 14px;
+      }
+      .hero-title {
+        font-size: 1.85rem;
+      }
+      .btn-row {
+        flex-direction: column;
+      }
+      .btn {
+        width: 100%;
+      }
+      .stats-bar {
+        font-size: 0.7rem;
+        gap: 8px;
+      }
+    }
+  </style>
 </head>
 <body>
 
-<h1>Text File Merger</h1>
-<p class="subtitle">Load multiple .txt files and merge them into one, separated by a line and the file name.</p>
+  <div class="container">
+    <!-- Top Navigation -->
+    <div class="top-nav">
+      <a href="./index.html" class="back-link">&larr; Back to Playground</a>
+      <span class="badge-top">🚀 Client-Side Utility</span>
+    </div>
 
-<div class="card">
-  <label for="fileInput"><strong>Select .txt files</strong></label>
-  <input type="file" id="fileInput" accept=".txt,text/plain" multiple>
-  <div class="hint">You can select multiple files at once, or add more files in additional passes. Drag to reorder is not supported here, but files are merged in the order shown below.</div>
+    <!-- Hero Header -->
+    <header>
+      <h1 class="hero-title">Text & Markdown File Merger</h1>
+      <p class="hero-desc">
+        Load and combine multiple <strong style="color:#67e8f9;">.md</strong>, <strong style="color:#a5b4fc;">.txt</strong>, <strong style="color:#6ee7b7;">.csv</strong>, <strong style="color:#fcd34d;">.json</strong>, <strong style="color:#fdba74;">.yaml</strong>, <strong style="color:#d8b4fe;">.log</strong>, and other plain or semistructured text documents into a unified output file.
+      </p>
+    </header>
 
-  <ul id="fileList"></ul>
+    <!-- Main Card -->
+    <div class="card">
+      <!-- Drag & Drop Upload Zone -->
+      <div class="drop-zone" id="dropZone">
+        <input 
+          type="file" 
+          id="fileInput" 
+          accept=".txt,.md,.markdown,.mdown,.json,.jsonl,.ndjson,.csv,.tsv,.yaml,.yml,.xml,.toml,.ini,.cfg,.conf,.log,.env,.sql,.html,.htm,.css,.js,.mjs,.cjs,.ts,.tsx,.jsx,.py,.sh,.bash,.bat,.cmd,.ps1,.r,.rmd,.tex,text/*" 
+          multiple
+        >
+        <div class="upload-icon">📂</div>
+        <div class="drop-title">Drop your files here, or click to browse</div>
+        <div class="drop-sub">Drag & drop multiple files at once or select them in batches</div>
+        <div class="format-pills">
+          <span class="format-pill">.md / Markdown</span>
+          <span class="format-pill">.txt / Plain Text</span>
+          <span class="format-pill">.json / JSONL</span>
+          <span class="format-pill">.csv / TSV</span>
+          <span class="format-pill">.yaml / YML</span>
+          <span class="format-pill">.log</span>
+          <span class="format-pill">.sql</span>
+          <span class="format-pill">.py / .js / Code</span>
+          <span class="format-pill">+ any text file</span>
+        </div>
+      </div>
 
-  <div class="btn-row">
-    <button class="primary" id="mergeBtn" disabled>Merge files</button>
-    <button class="secondary" id="clearBtn">Clear list</button>
+      <!-- File List & Reorder Controls -->
+      <div class="list-header">
+        <div class="list-title-wrap">
+          <h2 class="list-title">Selected Documents</h2>
+          <span class="list-count-badge" id="fileCountBadge">0 files</span>
+        </div>
+        <div class="list-actions">
+          <button class="mini-btn" id="sortAzBtn" title="Sort files alphabetically (A-Z)">Sort A-Z</button>
+          <button class="mini-btn" id="sortZaBtn" title="Sort files reverse alphabetically (Z-A)">Sort Z-A</button>
+          <button class="mini-btn" id="sortSizeBtn" title="Sort files by size (largest first)">Sort by Size</button>
+          <button class="mini-btn" id="reverseBtn" title="Reverse current order">Reverse</button>
+          <button class="mini-btn danger" id="clearListBtn" title="Remove all selected files">Clear List</button>
+        </div>
+      </div>
+
+      <!-- Selected File Items -->
+      <ul id="fileList">
+        <li class="empty-list" id="emptyStateMsg">No files added yet. Drop files above to get started.</li>
+      </ul>
+
+      <!-- Merging & Separator Options Grid -->
+      <div class="options-grid">
+        <div class="option-group">
+          <label for="separatorStyle">Separator Header Style</label>
+          <select id="separatorStyle" class="select-custom">
+            <option value="dashed_banner">Dashed Banner (--- Filename ---)</option>
+            <option value="md_h1">Markdown H1 Heading (# Filename)</option>
+            <option value="md_h2">Markdown H2 Heading (## Filename)</option>
+            <option value="md_divider">Markdown Divider (--- + ### Filename)</option>
+            <option value="md_codeblock">Markdown Code Block (```ext + content)</option>
+            <option value="comment_slash">Slash Comments (// File: Filename)</option>
+            <option value="comment_hash">Hash Comments (# File: Filename)</option>
+            <option value="clean_spacing">Clean Spacing Only (No Header)</option>
+          </select>
+          <label class="checkbox-wrap">
+            <input type="checkbox" id="includeHeaderName" checked>
+            <span>Include file name in separator headers</span>
+          </label>
+        </div>
+
+        <div class="option-group">
+          <label for="outName">Output File Name</label>
+          <input type="text" id="outName" class="text-input" value="merged.txt" placeholder="e.g. merged.md or notes.txt">
+          <div class="ext-chips">
+            <span class="ext-chip" data-ext=".md">.md</span>
+            <span class="ext-chip" data-ext=".txt">.txt</span>
+            <span class="ext-chip" data-ext=".json">.json</span>
+            <span class="ext-chip" data-ext=".csv">.csv</span>
+            <span class="ext-chip" data-ext=".log">.log</span>
+            <span class="ext-chip" data-ext=".sql">.sql</span>
+          </div>
+          <label class="checkbox-wrap">
+            <input type="checkbox" id="ensureTrailingNewline" checked>
+            <span>Ensure newline at end of each file</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Main Action Buttons -->
+      <div class="btn-row">
+        <button class="btn btn-primary" id="mergeBtn" disabled>
+          <span>⚡ Merge Files</span>
+        </button>
+      </div>
+
+      <!-- Merged Output Preview Section -->
+      <div class="output-section">
+        <div class="output-header">
+          <div class="output-title">Merged Output Preview</div>
+          <div class="stats-bar" id="statsBar">
+            <div class="stat-item">Lines: <span id="statLines">0</span></div>
+            <div class="stat-item">Words: <span id="statWords">0</span></div>
+            <div class="stat-item">Characters: <span id="statChars">0</span></div>
+            <div class="stat-item">Size: <span id="statSize">0 B</span></div>
+          </div>
+        </div>
+
+        <div class="textarea-wrap">
+          <textarea id="output" placeholder="Merged file content will appear here after clicking 'Merge Files'..." readonly></textarea>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-success" id="downloadBtn" disabled>
+            <span>📥 Download Merged File</span>
+          </button>
+          <button class="btn btn-secondary" id="copyBtn" disabled>
+            <span>📋 Copy to Clipboard</span>
+          </button>
+          <button class="btn btn-secondary" id="clearOutputBtn" disabled>
+            <span>🗑️ Clear Output</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <p>
+        <strong>My Playground</strong> • Text & Markdown File Merger &bull; 
+        <a href="./index.html">Main Directory</a>
+      </p>
+    </footer>
   </div>
 
-  <div class="filename-input">
-    <label for="outName">Output file name</label>
-    <input type="text" id="outName" value="merged.txt">
-  </div>
+  <!-- Toast Notification -->
+  <div class="toast" id="toast">Copied to clipboard!</div>
 
-  <textarea id="output" placeholder="Merged content will appear here..." readonly></textarea>
+  <script>
+    // Elements
+    const fileInput = document.getElementById('fileInput');
+    const dropZone = document.getElementById('dropZone');
+    const fileListEl = document.getElementById('fileList');
+    const emptyStateMsg = document.getElementById('emptyStateMsg');
+    const fileCountBadge = document.getElementById('fileCountBadge');
+    const mergeBtn = document.getElementById('mergeBtn');
+    const clearListBtn = document.getElementById('clearListBtn');
+    const sortAzBtn = document.getElementById('sortAzBtn');
+    const sortZaBtn = document.getElementById('sortZaBtn');
+    const sortSizeBtn = document.getElementById('sortSizeBtn');
+    const reverseBtn = document.getElementById('reverseBtn');
+    const separatorStyleSelect = document.getElementById('separatorStyle');
+    const includeHeaderNameCheck = document.getElementById('includeHeaderName');
+    const ensureTrailingNewlineCheck = document.getElementById('ensureTrailingNewline');
+    const outNameInput = document.getElementById('outName');
+    const outputEl = document.getElementById('output');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const copyBtn = document.getElementById('copyBtn');
+    const clearOutputBtn = document.getElementById('clearOutputBtn');
+    const toast = document.getElementById('toast');
+    const statLines = document.getElementById('statLines');
+    const statWords = document.getElementById('statWords');
+    const statChars = document.getElementById('statChars');
+    const statSize = document.getElementById('statSize');
+    const extChips = document.querySelectorAll('.ext-chip');
 
-  <div class="btn-row">
-    <button class="primary" id="downloadBtn" disabled>Download merged file</button>
-    <button class="secondary" id="copyBtn" disabled>Copy to clipboard</button>
-  </div>
-</div>
+    // Selected files array
+    let files = [];
+    let userEditedFilename = false;
 
-<script>
-  const fileInput = document.getElementById('fileInput');
-  const fileListEl = document.getElementById('fileList');
-  const mergeBtn = document.getElementById('mergeBtn');
-  const clearBtn = document.getElementById('clearBtn');
-  const outputEl = document.getElementById('output');
-  const downloadBtn = document.getElementById('downloadBtn');
-  const copyBtn = document.getElementById('copyBtn');
-  const outNameInput = document.getElementById('outName');
+    // Toast Notification helper
+    let toastTimeout;
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.add('show');
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2400);
+    }
 
-  let files = [];
+    // Byte size formatting
+    function formatBytes(bytes) {
+      if (!bytes || bytes === 0) return '0 B';
+      const k = 1024;
+      const sizes = ['B', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+    }
 
-  function renderFileList() {
-    fileListEl.innerHTML = '';
-    files.forEach((f, idx) => {
-      const li = document.createElement('li');
-      const nameSpan = document.createElement('span');
-      nameSpan.className = 'name';
-      nameSpan.textContent = f.name;
-      const removeBtn = document.createElement('button');
-      removeBtn.textContent = 'Remove';
-      removeBtn.addEventListener('click', () => {
-        files.splice(idx, 1);
-        renderFileList();
-      });
-      li.appendChild(nameSpan);
-      li.appendChild(removeBtn);
-      fileListEl.appendChild(li);
-    });
-    mergeBtn.disabled = files.length === 0;
-  }
-
-  fileInput.addEventListener('change', (e) => {
-    const newFiles = Array.from(e.target.files);
-    files = files.concat(newFiles);
-    renderFileList();
-    fileInput.value = '';
-  });
-
-  clearBtn.addEventListener('click', () => {
-    files = [];
-    renderFileList();
-    outputEl.value = '';
-    downloadBtn.disabled = true;
-    copyBtn.disabled = true;
-  });
-
-  function readFileAsText(file) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = reject;
-      reader.readAsText(file);
-    });
-  }
-
-  const SEPARATOR_LINE = '-'.repeat(60);
-
-  mergeBtn.addEventListener('click', async () => {
-    if (files.length === 0) return;
-    mergeBtn.disabled = true;
-    mergeBtn.textContent = 'Merging...';
-
-    let combined = '';
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-      const text = await readFileAsText(file);
-      if (i > 0) {
-        combined += '\n\n';
+    // Helper: Determine file badge class and text
+    function getFileBadge(filename) {
+      const ext = filename.includes('.') ? filename.split('.').pop().toLowerCase() : '';
+      switch (ext) {
+        case 'md':
+        case 'markdown':
+        case 'mdown':
+        case 'mkd':
+          return { label: 'MD', className: 'badge-md' };
+        case 'txt':
+        case 'text':
+          return { label: 'TXT', className: 'badge-txt' };
+        case 'json':
+        case 'jsonl':
+        case 'ndjson':
+          return { label: 'JSON', className: 'badge-json' };
+        case 'csv':
+        case 'tsv':
+          return { label: 'CSV', className: 'badge-csv' };
+        case 'yaml':
+        case 'yml':
+        case 'toml':
+          return { label: 'YAML', className: 'badge-yaml' };
+        case 'xml':
+        case 'html':
+        case 'htm':
+          return { label: 'XML', className: 'badge-xml' };
+        case 'log':
+          return { label: 'LOG', className: 'badge-log' };
+        case 'js':
+        case 'ts':
+        case 'py':
+        case 'sql':
+        case 'sh':
+        case 'bat':
+        case 'ps1':
+        case 'css':
+          return { label: ext.toUpperCase(), className: 'badge-code' };
+        default:
+          return { label: ext ? ext.toUpperCase().slice(0, 4) : 'FILE', className: 'badge-default' };
       }
-      combined += SEPARATOR_LINE + '\n';
-      combined += file.name + '\n';
-      combined += SEPARATOR_LINE + '\n\n';
-      combined += text;
     }
 
-    outputEl.value = combined;
-    downloadBtn.disabled = false;
-    copyBtn.disabled = false;
-    mergeBtn.disabled = false;
-    mergeBtn.textContent = 'Merge files';
-  });
+    // Auto-suggest output filename extension based on files
+    function suggestOutputFilename() {
+      if (userEditedFilename || files.length === 0) return;
+      
+      const counts = {};
+      files.forEach(f => {
+        const ext = f.name.includes('.') ? f.name.split('.').pop().toLowerCase() : '';
+        if (ext) counts[ext] = (counts[ext] || 0) + 1;
+      });
 
-  downloadBtn.addEventListener('click', () => {
-    const blob = new Blob([outputEl.value], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    let name = outNameInput.value.trim() || 'merged.txt';
-    if (!name.toLowerCase().endsWith('.txt')) name += '.txt';
-    a.download = name;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  });
+      let topExt = 'txt';
+      let maxCount = 0;
+      for (const [ext, count] of Object.entries(counts)) {
+        if (count > maxCount) {
+          maxCount = count;
+          topExt = ext;
+        }
+      }
 
-  copyBtn.addEventListener('click', async () => {
-    try {
-      await navigator.clipboard.writeText(outputEl.value);
-      copyBtn.textContent = 'Copied!';
-      setTimeout(() => { copyBtn.textContent = 'Copy to clipboard'; }, 1500);
-    } catch (err) {
-      alert('Could not copy automatically. Please copy manually from the text box.');
+      // If top extension is markdown, default to .md
+      if (topExt === 'markdown' || topExt === 'mdown') topExt = 'md';
+
+      outNameInput.value = `merged.${topExt}`;
+
+      // Also adjust separator style intelligently if mostly markdown
+      if (topExt === 'md' && separatorStyleSelect.value === 'dashed_banner') {
+        separatorStyleSelect.value = 'md_divider';
+      }
     }
-  });
-</script>
 
+    outNameInput.addEventListener('input', () => {
+      userEditedFilename = true;
+    });
+
+    // Quick extension chip clicks
+    extChips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        const targetExt = chip.dataset.ext;
+        let current = outNameInput.value.trim() || 'merged';
+        const lastDot = current.lastIndexOf('.');
+        if (lastDot !== -1) {
+          current = current.substring(0, lastDot);
+        }
+        outNameInput.value = current + targetExt;
+        userEditedFilename = true;
+      });
+    });
+
+    // Render the file list in UI
+    function renderFileList() {
+      fileListEl.innerHTML = '';
+
+      if (files.length === 0) {
+        fileListEl.appendChild(emptyStateMsg);
+        fileCountBadge.textContent = '0 files';
+        mergeBtn.disabled = true;
+        sortAzBtn.disabled = true;
+        sortZaBtn.disabled = true;
+        sortSizeBtn.disabled = true;
+        reverseBtn.disabled = true;
+        clearListBtn.disabled = true;
+        return;
+      }
+
+      let totalBytes = 0;
+      files.forEach(f => { totalBytes += f.size || 0; });
+      fileCountBadge.textContent = `${files.length} file${files.length > 1 ? 's' : ''} (${formatBytes(totalBytes)})`;
+      
+      mergeBtn.disabled = false;
+      sortAzBtn.disabled = false;
+      sortZaBtn.disabled = false;
+      sortSizeBtn.disabled = false;
+      reverseBtn.disabled = false;
+      clearListBtn.disabled = false;
+
+      files.forEach((f, idx) => {
+        const li = document.createElement('li');
+        li.className = 'file-item';
+
+        const metaWrap = document.createElement('div');
+        metaWrap.className = 'file-meta-wrap';
+
+        const idxSpan = document.createElement('span');
+        idxSpan.className = 'file-idx';
+        idxSpan.textContent = `${idx + 1}.`;
+
+        const badgeInfo = getFileBadge(f.name);
+        const badgeSpan = document.createElement('span');
+        badgeSpan.className = `ext-badge ${badgeInfo.className}`;
+        badgeSpan.textContent = badgeInfo.label;
+
+        const nameSpan = document.createElement('span');
+        nameSpan.className = 'file-name';
+        nameSpan.textContent = f.name;
+        nameSpan.title = f.name;
+
+        const sizeSpan = document.createElement('span');
+        sizeSpan.className = 'file-size';
+        sizeSpan.textContent = `(${formatBytes(f.size)})`;
+
+        metaWrap.appendChild(idxSpan);
+        metaWrap.appendChild(badgeSpan);
+        metaWrap.appendChild(nameSpan);
+        metaWrap.appendChild(sizeSpan);
+
+        // Action buttons: Move Up, Move Down, Remove
+        const actionsWrap = document.createElement('div');
+        actionsWrap.className = 'item-actions';
+
+        if (idx > 0) {
+          const upBtn = document.createElement('button');
+          upBtn.className = 'btn-icon';
+          upBtn.innerHTML = '▲';
+          upBtn.title = 'Move Up';
+          upBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const temp = files[idx];
+            files[idx] = files[idx - 1];
+            files[idx - 1] = temp;
+            renderFileList();
+          });
+          actionsWrap.appendChild(upBtn);
+        }
+
+        if (idx < files.length - 1) {
+          const downBtn = document.createElement('button');
+          downBtn.className = 'btn-icon';
+          downBtn.innerHTML = '▼';
+          downBtn.title = 'Move Down';
+          downBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const temp = files[idx];
+            files[idx] = files[idx + 1];
+            files[idx + 1] = temp;
+            renderFileList();
+          });
+          actionsWrap.appendChild(downBtn);
+        }
+
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'btn-icon btn-delete';
+        removeBtn.innerHTML = '✕';
+        removeBtn.title = 'Remove File';
+        removeBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          files.splice(idx, 1);
+          renderFileList();
+          suggestOutputFilename();
+        });
+        actionsWrap.appendChild(removeBtn);
+
+        li.appendChild(metaWrap);
+        li.appendChild(actionsWrap);
+        fileListEl.appendChild(li);
+      });
+    }
+
+    // Add new files from input or drag-and-drop
+    function handleNewFiles(newFiles) {
+      if (!newFiles || newFiles.length === 0) return;
+      files = files.concat(newFiles);
+      suggestOutputFilename();
+      renderFileList();
+      showToast(`Added ${newFiles.length} file${newFiles.length > 1 ? 's' : ''}`);
+    }
+
+    fileInput.addEventListener('change', (e) => {
+      const newFiles = Array.from(e.target.files);
+      handleNewFiles(newFiles);
+      fileInput.value = '';
+    });
+
+    // Drag and Drop events
+    ['dragenter', 'dragover'].forEach(eventName => {
+      dropZone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropZone.classList.add('drag-active');
+      });
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+      dropZone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropZone.classList.remove('drag-active');
+      });
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+      if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+        handleNewFiles(Array.from(e.dataTransfer.files));
+      }
+    });
+
+    // Sorting & Manipulation
+    sortAzBtn.addEventListener('click', () => {
+      files.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' }));
+      renderFileList();
+      showToast('Sorted files alphabetically (A-Z)');
+    });
+
+    sortZaBtn.addEventListener('click', () => {
+      files.sort((a, b) => b.name.localeCompare(a.name, undefined, { numeric: true, sensitivity: 'base' }));
+      renderFileList();
+      showToast('Sorted files reverse alphabetically (Z-A)');
+    });
+
+    sortSizeBtn.addEventListener('click', () => {
+      files.sort((a, b) => (b.size || 0) - (a.size || 0));
+      renderFileList();
+      showToast('Sorted files by size');
+    });
+
+    reverseBtn.addEventListener('click', () => {
+      files.reverse();
+      renderFileList();
+      showToast('Reversed file order');
+    });
+
+    clearListBtn.addEventListener('click', () => {
+      files = [];
+      userEditedFilename = false;
+      renderFileList();
+      showToast('Cleared all selected files');
+    });
+
+    // File Reading Promise
+    function readFileAsText(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result || '');
+        reader.onerror = () => reject(new Error(`Could not read "${file.name}"`));
+        reader.readAsText(file);
+      });
+    }
+
+    // Build Separator based on style
+    const SEPARATOR_LINE = '-'.repeat(60);
+
+    function buildHeader(filename, style, includeName) {
+      const ext = filename.includes('.') ? filename.split('.').pop().toLowerCase() : '';
+      if (!includeName) {
+        switch (style) {
+          case 'dashed_banner':
+            return SEPARATOR_LINE + '\n';
+          case 'md_divider':
+            return '---\n';
+          default:
+            return '';
+        }
+      }
+
+      switch (style) {
+        case 'dashed_banner':
+          return `${SEPARATOR_LINE}\n${filename}\n${SEPARATOR_LINE}\n\n`;
+        case 'md_h1':
+          return `# ${filename}\n\n`;
+        case 'md_h2':
+          return `## ${filename}\n\n`;
+        case 'md_divider':
+          return `---\n### ${filename}\n\n`;
+        case 'md_codeblock':
+          return `### ${filename}\n\`\`\`${ext}\n`;
+        case 'comment_slash':
+          return `// ==========================================\n// File: ${filename}\n// ==========================================\n\n`;
+        case 'comment_hash':
+          return `# ==========================================\n# File: ${filename}\n# ==========================================\n\n`;
+        case 'clean_spacing':
+          return '';
+        default:
+          return `${SEPARATOR_LINE}\n${filename}\n${SEPARATOR_LINE}\n\n`;
+      }
+    }
+
+    function buildFooter(filename, style) {
+      if (style === 'md_codeblock') {
+        return '\n```\n';
+      }
+      return '';
+    }
+
+    // Update Output Stats
+    function updateStats(text) {
+      if (!text) {
+        statLines.textContent = '0';
+        statWords.textContent = '0';
+        statChars.textContent = '0';
+        statSize.textContent = '0 B';
+        return;
+      }
+      const lines = text.length === 0 ? 0 : text.split('\n').length;
+      const words = (text.match(/\S+/g) || []).length;
+      const chars = text.length;
+      const bytes = new Blob([text]).size;
+
+      statLines.textContent = lines.toLocaleString();
+      statWords.textContent = words.toLocaleString();
+      statChars.textContent = chars.toLocaleString();
+      statSize.textContent = formatBytes(bytes);
+    }
+
+    // Merge Action
+    mergeBtn.addEventListener('click', async () => {
+      if (files.length === 0) return;
+      mergeBtn.disabled = true;
+      mergeBtn.textContent = '⏳ Merging Files...';
+
+      const style = separatorStyleSelect.value;
+      const includeName = includeHeaderNameCheck.checked;
+      const ensureNewline = ensureTrailingNewlineCheck.checked;
+
+      let combined = '';
+      try {
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i];
+          let text = await readFileAsText(file);
+
+          if (ensureNewline && text.length > 0 && !text.endsWith('\n')) {
+            text += '\n';
+          }
+
+          if (i > 0) {
+            combined += '\n\n';
+          }
+
+          combined += buildHeader(file.name, style, includeName);
+          combined += text;
+          combined += buildFooter(file.name, style);
+        }
+
+        outputEl.value = combined;
+        updateStats(combined);
+        downloadBtn.disabled = false;
+        copyBtn.disabled = false;
+        clearOutputBtn.disabled = false;
+        showToast(`Successfully merged ${files.length} documents!`);
+      } catch (err) {
+        alert('Error while reading files: ' + err.message);
+      } finally {
+        mergeBtn.disabled = false;
+        mergeBtn.innerHTML = '<span>⚡ Merge Files</span>';
+      }
+    });
+
+    // Clear Output
+    clearOutputBtn.addEventListener('click', () => {
+      outputEl.value = '';
+      updateStats('');
+      downloadBtn.disabled = true;
+      copyBtn.disabled = true;
+      clearOutputBtn.disabled = true;
+      showToast('Output cleared');
+    });
+
+    // Copy to Clipboard
+    copyBtn.addEventListener('click', async () => {
+      if (!outputEl.value) return;
+      try {
+        await navigator.clipboard.writeText(outputEl.value);
+        copyBtn.innerHTML = '<span>✅ Copied!</span>';
+        showToast('Merged content copied to clipboard');
+        setTimeout(() => {
+          copyBtn.innerHTML = '<span>📋 Copy to Clipboard</span>';
+        }, 1800);
+      } catch (err) {
+        alert('Could not copy automatically. Please copy manually from the preview textarea.');
+      }
+    });
+
+    // Download Merged File
+    downloadBtn.addEventListener('click', () => {
+      if (!outputEl.value) return;
+
+      let name = outNameInput.value.trim() || 'merged.txt';
+      if (!name.includes('.')) {
+        const style = separatorStyleSelect.value;
+        const defaultExt = (style.startsWith('md_')) ? '.md' : '.txt';
+        name += defaultExt;
+      }
+
+      // Determine MIME Type based on file extension
+      let mime = 'text/plain;charset=utf-8';
+      const ext = name.split('.').pop().toLowerCase();
+      if (ext === 'md' || ext === 'markdown') {
+        mime = 'text/markdown;charset=utf-8';
+      } else if (ext === 'csv') {
+        mime = 'text/csv;charset=utf-8';
+      } else if (ext === 'json' || ext === 'jsonl') {
+        mime = 'application/json;charset=utf-8';
+      } else if (ext === 'xml') {
+        mime = 'application/xml;charset=utf-8';
+      } else if (ext === 'html') {
+        mime = 'text/html;charset=utf-8';
+      }
+
+      const blob = new Blob([outputEl.value], { type: mime });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = name;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast(`Downloaded "${name}"`);
+    });
+
+    // Initialize initial state
+    renderFileList();
+  </script>
 </body>
 </html>
